@@ -4,13 +4,11 @@ import {
 } from 'ask-sdk-core';
 
 import {
-	Note,
-	levels,
-	getNewRound,
 	getNewGame,
-	evaluateGuess
+	evaluateGuess,
 } from './game'
 import { GameSessionManager } from './GameSessionManager'
+import * as speech from './speech';
 
 const AnswerIntent: RequestHandler = {
 	canHandle(handlerInput) {
@@ -22,17 +20,24 @@ const AnswerIntent: RequestHandler = {
 		const gameSessionManager = new GameSessionManager(handlerInput)
 
 		const intervalDistanceGuess = extractIntervalDistanceFromAnswer(handlerInput)
-		const { gameSession, isCorrect, isDoneWithLevel } = evaluateGuess(gameSessionManager.getSession(), intervalDistanceGuess)
+		const gameSession = evaluateGuess(gameSessionManager.getSession(), intervalDistanceGuess)
+
+		const stat = gameSession.stats[gameSession.stats.length - 1]
+		const isCorrect = stat.guess === stat.answer
+
+		const counts = {
+			correct: gameSession.stats.filter(stat => stat.guess === stat.answer).length,
+			total: gameSession.stats.length
+		}
 
 		gameSessionManager.setSession(gameSession)
 
-		const stats = gameSessionManager.getSession().stats
-
 		return handlerInput.responseBuilder
-			.speak(
-				(isCorrect ? 'Right' : 'Wrong') +
-				(isDoneWithLevel ? ` All done! Score was ${stats.correct} out of ${stats.correct + stats.incorrect}` : /* getNextRoundSpeech */'')
-			)
+			.speak(speech.compose(
+				speech.assess(isCorrect),
+				(gameSession.currentRound ? speech.question(gameSession.currentRound) : speech.roundComplete(counts.correct, counts.total, gameSession.level + 1))
+			))
+			.withShouldEndSession(false)
 			.getResponse();
 
 		function extractIntervalDistanceFromAnswer(handlerInput: Alexa.HandlerInput): number {
@@ -77,26 +82,125 @@ const LaunchRequest: RequestHandler = {
 			throw new Error('Expected currentRound when starting a new game')
 		}
 
-		const { referenceNote, targetNote } = currentRound
-
 		return handlerInput.responseBuilder
-			.speak(
-				`Welcome to ear trainer. <audio src="soundbank://soundlibrary/musical/amzn_sfx_piano_note_1x_01"/> Let\'s start with level ${level}.` +
-				`${Note[referenceNote]}, ${Note[targetNote]}`
-			)
+			.speak(speech.compose(
+				speech.welcome(),
+				speech.levelIntroduction(level),
+				speech.question(currentRound)
+			))
+			.reprompt('Bee boop') // TODO
+			.withShouldEndSession(false)
 			.getResponse();
 	},
 };
 
+const FallbackHandler: Alexa.RequestHandler = {
+	canHandle() {
+		return true
+	},
+	handle(handlerInput) {
+		return handlerInput.responseBuilder
+			.speak(speech.compose(
+				Alexa.getRequestType(handlerInput.requestEnvelope),
+				Alexa.getIntentName(handlerInput.requestEnvelope)
+			))
+			.getResponse();
+	}
+}
+
+const ErrorHandler: Alexa.ErrorHandler = {
+	canHandle() {
+		return true;
+	},
+	handle(handlerInput, error) {
+		console.log(`Error handled: ${error.stack}`)
+
+		const speechOutput = error.stack as string; // TODO
+		const repromptText = speechOutput;
+
+		return handlerInput.responseBuilder
+			.speak(speechOutput)
+			.reprompt(repromptText)
+			.getResponse();
+	},
+};
+
+const SessionEndedRequestHandler: Alexa.RequestHandler = {
+	canHandle(handlerInput) {
+		return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+	},
+	handle(handlerInput) {
+		// TODO
+		// @ts-ignore
+		console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+
+		return handlerInput.responseBuilder.getResponse();
+	},
+};
+
+const YesIntent: Alexa.RequestHandler = {
+	canHandle(handlerInput) {
+		// TODO: Also check that round is over...
+		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent';
+	},
+	handle(handlerInput) {
+		// Handle level up
+		const gameSessionManager = new GameSessionManager(handlerInput)
+		const level = gameSessionManager.getSession().level + 1
+
+		// Set state for new game
+		gameSessionManager.setSession(getNewGame(level))
+
+		// Return UI for new game
+		const currentRound = gameSessionManager.getSession().currentRound
+
+		if (!currentRound) {
+			throw new Error('Expected currentRound when starting a new game')
+		}
+
+		return handlerInput.responseBuilder
+			.speak(speech.compose(
+				speech.levelIntroduction(level),
+				speech.question(currentRound)
+			))
+			.reprompt('Bee boop') // TODO
+			.withShouldEndSession(false)
+			.getResponse();
+	},
+}
+
+const NoIntent: Alexa.RequestHandler = {
+	canHandle(handlerInput) {
+		// TODO: Also check that round is over...
+		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent';
+	},
+	handle(handlerInput) {
+		return handlerInput.responseBuilder
+			.speak('Thanks for playing!')
+			.withShouldEndSession(true)
+			.getResponse();
+	},
+}
 
 export const handler = Alexa.SkillBuilders.custom()
 	.addRequestHandlers(
 		LaunchRequest,
 		AnswerIntent,
+		YesIntent,
+		NoIntent,
 		// HelpHandler,
 		// ExitHandler,
-		// FallbackHandler,
-		// SessionEndedRequestHandler,
+		FallbackHandler,
+		SessionEndedRequestHandler,
 	)
-	// .addErrorHandlers(ErrorHandler)
+	.addErrorHandlers(ErrorHandler)
 	.lambda()
+
+process.on('unhandledRejection', error => {
+	// Will print "unhandledRejection err is not defined"
+	console.error('unhandledRejection', error);
+});

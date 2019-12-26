@@ -5,7 +5,10 @@ export enum Note {
 	C4 = 60,
 	D4 = 62,
 	E4 = 64,
-	F4 = 65
+	F4 = 65,
+	G4 = 67,
+	A4 = 69,
+	B4 = 71
 }
 
 interface Level {
@@ -15,16 +18,18 @@ interface Level {
 	numRounds: number
 }
 
-export interface GameSession {
-	level: number,
-	stats: {
-		correct: number,
-		incorrect: number
-	},
-	currentRound: CurrentRound | null // null means the round is over
+interface Stat {
+	guess: CurrentRound['intervalDistance'],
+	answer: CurrentRound['intervalDistance']
 }
 
-interface CurrentRound {
+export interface GameSession {
+	level: number,
+	stats: Stat[],
+	currentRound?: CurrentRound // undefined when round is over
+}
+
+export interface CurrentRound {
 	roundNumber: number
 	referenceNote: Note
 	targetNote: Note
@@ -35,10 +40,13 @@ export const levels: Level[] = [{
 	description: 'First half of the C Major scale',
 	referenceNotes: [Note.C4],
 	targetNotes: [Note.D4, Note.E4, Note.F4],
-	numRounds: 5
-}/* , {
-	description: 'Second half of C Major'
-} */]
+	numRounds: 2
+}, {
+	description: 'Second half of the C Major scale',
+	referenceNotes: [Note.C4],
+	targetNotes: [Note.G4, Note.A4, Note.B4],
+	numRounds: 2
+}]
 
 // Given a game level, select two pitches
 // Given a pitch, return the audio file name
@@ -50,72 +58,57 @@ export const levels: Level[] = [{
 // Level 2: (C4), (G4, A4, B4)
 // Level 3: (C4), (C4, D4, E4, F4, G4, A4, B4)
 
-
-export const getIntervalsForLevel = (levelNumber: number) => {
-	const level = levels[levelNumber - 1]
-
-	const referenceNote = getRandomElement(level.referenceNotes)
-	const targetNote = getRandomElement(level.targetNotes)
-
-	return {
-		referenceNote,
-		targetNote,
-		intervalDistance: targetNote - referenceNote
-	}
-
-	function getRandomElement<T> (elements: Array<T>): T {
-		return elements[Math.floor(Math.random() * elements.length)];
-	}
-}
-
-
 export const getNewGame = (level: GameSession['level'] = 1): GameSession => {
 	return {
 		level,
-		stats: {
-			correct: 0,
-			incorrect: 0
-		},
-		currentRound: {
-			roundNumber: 1,
-			...getIntervalsForLevel(level)
-		}
+		stats: [],
+		currentRound: getNewRound(level)
 	}
 }
 
-export const getNewRound = (level: GameSession['level'], previousRoundNumber: CurrentRound['roundNumber'] = 0): CurrentRound => {
-	return {
-		roundNumber: previousRoundNumber + 1,
-		...getIntervalsForLevel(level)
-	}
-}
-
-interface GuessEvaluation {
-	gameSession: GameSession,
-	isCorrect: boolean,
-	isDoneWithLevel: boolean
-}
-
-export const evaluateGuess = (gameSession: GameSession, intervalDistanceGuess: CurrentRound['intervalDistance']): GuessEvaluation => {
+export const evaluateGuess = (gameSession: GameSession, intervalDistanceGuess: CurrentRound['intervalDistance']): GameSession => {
 	if (!gameSession.currentRound) {
 		throw new Error('Cannot evaluate guess when there is no currentRound!')
 	}
 
-	const isCorrect = intervalDistanceGuess === gameSession.currentRound.intervalDistance
 	const isDoneWithLevel = gameSession.currentRound.roundNumber === levels[gameSession.level - 1].numRounds
 
 	const nextGameSession = {
 		...gameSession,
-		stats: {
-			correct: isCorrect ? gameSession.stats.correct + 1 : gameSession.stats.correct,
-			incorrect: !isCorrect ? gameSession.stats.incorrect + 1 : gameSession.stats.incorrect
-		},
-		currentRound: isDoneWithLevel ? null : getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
+		stats: [...gameSession.stats, {
+			guess: intervalDistanceGuess,
+			answer: gameSession.currentRound.intervalDistance
+		}],
+		currentRound: isDoneWithLevel ? undefined : getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
 	}
 
+	return nextGameSession
+}
+
+function getNewRound(level: GameSession['level'], previousRoundNumber: CurrentRound['roundNumber'] = 0): CurrentRound {
 	return {
-		gameSession: nextGameSession,
-		isCorrect,
-		isDoneWithLevel
+		roundNumber: previousRoundNumber + 1,
+		...getIntervalsForLevel(level)
+	}
+
+	function getIntervalsForLevel(levelNumber: number) {
+		const level = levels[levelNumber - 1]
+
+		if (!level) {
+			throw new Error(`No level configuration for level ${levelNumber}!`)
+		}
+
+		const referenceNote = getRandomElement(level.referenceNotes)
+		const targetNote = getRandomElement(level.targetNotes)
+
+		return {
+			referenceNote,
+			targetNote,
+			intervalDistance: targetNote - referenceNote
+		}
+
+		function getRandomElement<T>(elements: Array<T>): T {
+			return elements[Math.floor(Math.random() * elements.length)];
+		}
 	}
 }
