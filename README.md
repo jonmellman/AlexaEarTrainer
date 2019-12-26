@@ -30,18 +30,13 @@ ffmpeg -i <input-file> -ac 2 -codec:a libmp3lame -b:a 48k -ar 24000 -write_xing 
 
 ## TODO
 
-1. "Play it again" / "One more time" intent
-	"Play it again"
-	"Let me hear it again"
-	"Repeat"
-	"Again"
-	"Another time"
-	"Once more"
 1. Add more levels
-1. Logic for when to level up
-1. "Start at level _"
-1. "Explain level _"
-1. AMAZON.HelpIntent
-1. AMAZON.FallbackIntent
-1. AMAZON.StopIntent
-1. AMAZON.NavigateHomeIntent
+2. Logic for when to level up
+3. "Start at level _"
+4. "Explain level _"
+5. AMAZON.HelpIntent
+6. ~~AMAZON.RepeatIntent~~
+7. AMAZON.FallbackIntent
+8. ~~AMAZON.StopIntent~~
+9. AMAZON.NavigateHomeIntent
+11. Persistence

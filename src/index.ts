@@ -10,7 +10,7 @@ import {
 import { GameSessionManager } from './GameSessionManager'
 import * as speech from './speech';
 
-const AnswerIntent: RequestHandler = {
+const AnswerHandler: RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
@@ -47,11 +47,17 @@ const AnswerIntent: RequestHandler = {
 				throw new Error(`No slot resolutions found on '${slot}'`)
 			}
 
+			const resolutionsPerAuthority = slot.resolutions.resolutionsPerAuthority
+
+			if (!resolutionsPerAuthority[0].values) {
+				throw new Error(`'${slot.value}' didn't match '${slot.name}' slots`)
+			}
+
 			/*
 				If we created our slots correctly in the Alexa Developer Console, we should have an ID that corresponds to the interval distance.
 				If the guess is "minor second", then the distance will be 1. "major second" will be 2, etc.
 			*/
-			const intervalDistanceString = slot.resolutions.resolutionsPerAuthority[0].values[0].value.id
+			const intervalDistanceString = resolutionsPerAuthority[0].values[0].value.id
 			const intervalDistance = parseInt(intervalDistanceString)
 
 			if (isNaN(intervalDistance)) {
@@ -99,23 +105,25 @@ const FallbackHandler: Alexa.RequestHandler = {
 		return true
 	},
 	handle(handlerInput) {
+		// TODO: implement
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
+				'Fallback handler',
 				Alexa.getRequestType(handlerInput.requestEnvelope),
 				Alexa.getIntentName(handlerInput.requestEnvelope)
 			))
-			.getResponse();
+			.getResponse()
 	}
 }
 
 const ErrorHandler: Alexa.ErrorHandler = {
 	canHandle() {
-		return true;
+		return process.env.JEST_WORKER_ID === undefined;
 	},
 	handle(handlerInput, error) {
 		console.log(`Error handled: ${error.stack}`)
 
-		const speechOutput = error.stack as string; // TODO
+		const speechOutput = error.stack || 'No stack trace'
 		const repromptText = speechOutput;
 
 		return handlerInput.responseBuilder
@@ -138,15 +146,18 @@ const SessionEndedRequestHandler: Alexa.RequestHandler = {
 	},
 };
 
-const YesIntent: Alexa.RequestHandler = {
+const NextLevelHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
-		// TODO: Also check that round is over...
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+
+			// Round is over
+			new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
+
+			// User said yes
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
 			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent';
 	},
 	handle(handlerInput) {
-		// Handle level up
 		const gameSessionManager = new GameSessionManager(handlerInput)
 		const level = gameSessionManager.getSession().level + 1
 
@@ -165,18 +176,26 @@ const YesIntent: Alexa.RequestHandler = {
 				speech.levelIntroduction(level),
 				speech.question(currentRound)
 			))
-			.reprompt('Bee boop') // TODO
 			.withShouldEndSession(false)
 			.getResponse();
 	},
 }
 
-const NoIntent: Alexa.RequestHandler = {
+const StopHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
-		// TODO: Also check that round is over...
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
-			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent';
+			(
+				// User said Stop
+				Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+				Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent'
+			) || (
+				// Round is over
+				new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
+
+				// User said No to continuing
+				Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+				Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent'
+			)
 	},
 	handle(handlerInput) {
 		return handlerInput.responseBuilder
@@ -186,16 +205,24 @@ const NoIntent: Alexa.RequestHandler = {
 	},
 }
 
-const StopIntent: Alexa.RequestHandler = {
+const RepeatQuestionHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+			new GameSessionManager(handlerInput).getSession().currentRound !== undefined &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent';
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent'
 	},
 	handle(handlerInput) {
+		const gameSessionManager = new GameSessionManager(handlerInput)
+		const gameSession = gameSessionManager.getSession()
+
+		if (!gameSession.currentRound) {
+			throw new Error('Asked to repeat a question, but no currentRound!')
+		}
+
 		return handlerInput.responseBuilder
-			.speak(`Thanks for playing!`)
-			.withShouldEndSession(true)
+			.speak(speech.question(gameSession.currentRound))
+			.withShouldEndSession(false)
 			.getResponse();
 	},
 }
@@ -203,19 +230,18 @@ const StopIntent: Alexa.RequestHandler = {
 export const handler = Alexa.SkillBuilders.custom()
 	.addRequestHandlers(
 		LaunchRequest,
-		AnswerIntent,
-		YesIntent,
-		NoIntent,
-		StopIntent,
+		NextLevelHandler,
+		RepeatQuestionHandler,
+		StopHandler,
+		AnswerHandler, // This must be the last non-generic input handler, because Alexa maps other phrases to our slot values.
 		// HelpHandler,
 		// ExitHandler,
-		FallbackHandler,
 		SessionEndedRequestHandler,
+		FallbackHandler,
 	)
 	.addErrorHandlers(ErrorHandler)
 	.lambda()
 
 process.on('unhandledRejection', error => {
-	// Will print "unhandledRejection err is not defined"
 	console.error('unhandledRejection', error);
 });

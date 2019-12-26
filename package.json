@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "tsc",
+    "test": "jest test/",
     "deploy": "npm run build && ./lambda-upload.sh",
     "upload-media": "aws s3 cp --recursive media s3://alexa-ear-trainer/media && echo '\nMake the media folder public!'",
     "test:local": "source local.env && npx ts-node --files src/index.ts"
@@ -10,7 +11,10 @@
     "ask-sdk-model": "^1.25.1"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.24",
     "@types/node": "^13.1.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
     "ts-node": "^8.5.2",
     "typescript": "^3.7.2"
   }

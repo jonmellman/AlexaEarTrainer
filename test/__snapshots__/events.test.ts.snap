@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`events user-initiated exit event 1`] = `
+Object {
+  "response": Object {},
+  "sessionAttributes": Object {
+    "currentRound": Object {
+      "intervalDistance": 5,
+      "referenceNote": 60,
+      "roundNumber": 1,
+      "targetNote": 65,
+    },
+    "level": 1,
+    "stats": Array [],
+  },
+  "userAgent": "ask-node/2.7.0 Node/v12.13.0",
+  "version": "1.0",
+}
+`;
