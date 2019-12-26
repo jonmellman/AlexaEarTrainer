@@ -13,8 +13,10 @@ import * as speech from './speech';
 const AnswerHandler: RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+			// Round is in progress
+			new GameSessionManager(handlerInput).getSession().currentRound !== undefined &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AnswerIntent';
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AnswerIntent'
 	},
 	async handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
@@ -109,13 +111,16 @@ const FallbackHandler: Alexa.RequestHandler = {
 		return true
 	},
 	handle(handlerInput) {
-		// TODO: implement
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				'Fallback handler',
 				Alexa.getRequestType(handlerInput.requestEnvelope),
 				Alexa.getIntentName(handlerInput.requestEnvelope)
 			))
+			// TODO: implement
+			// .speak(speech.compose(
+			// 	'Whoops, can you rephrase that?'
+			// ))
 			.getResponse()
 	}
 }

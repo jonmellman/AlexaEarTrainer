@@ -39,13 +39,18 @@ export interface CurrentRound {
 export const levels: Level[] = [{
 	description: 'First half of the C Major scale',
 	referenceNotes: [Note.C4],
-	targetNotes: [Note.D4, Note.E4, Note.F4],
-	numRounds: 2
+	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4],
+	numRounds: 5
 }, {
 	description: 'Second half of the C Major scale',
 	referenceNotes: [Note.C4],
 	targetNotes: [Note.G4, Note.A4, Note.B4],
-	numRounds: 2
+	numRounds: 5
+}, {
+	description: 'Full octave of the C Major scale',
+	referenceNotes: [Note.C4],
+	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4],
+	numRounds: 5
 }]
 
 // Given a game level, select two pitches

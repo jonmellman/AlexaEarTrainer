@@ -38,5 +38,7 @@ ffmpeg -i <input-file> -ac 2 -codec:a libmp3lame -b:a 48k -ar 24000 -write_xing 
 6. ~~AMAZON.RepeatIntent~~
 7. AMAZON.FallbackIntent
 8. ~~AMAZON.StopIntent~~
-9. AMAZON.NavigateHomeIntent
+9. ~~AMAZON.NavigateHomeIntent~~
 11. Persistence
+12. right/wrong sounds
+13. add aliases for scale degree (two, three etc)
