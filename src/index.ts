@@ -186,12 +186,27 @@ const NoIntent: Alexa.RequestHandler = {
 	},
 }
 
+const StopIntent: Alexa.RequestHandler = {
+	canHandle(handlerInput) {
+		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
+			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent';
+	},
+	handle(handlerInput) {
+		return handlerInput.responseBuilder
+			.speak(`Thanks for playing!`)
+			.withShouldEndSession(true)
+			.getResponse();
+	},
+}
+
 export const handler = Alexa.SkillBuilders.custom()
 	.addRequestHandlers(
 		LaunchRequest,
 		AnswerIntent,
 		YesIntent,
 		NoIntent,
+		StopIntent,
 		// HelpHandler,
 		// ExitHandler,
 		FallbackHandler,

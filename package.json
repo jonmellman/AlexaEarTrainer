@@ -2,6 +2,7 @@
   "scripts": {
     "build": "tsc",
     "deploy": "npm run build && ./lambda-upload.sh",
+    "upload-media": "aws s3 cp --recursive media s3://alexa-ear-trainer/media && echo '\nMake the media folder public!'",
     "test:local": "source local.env && npx ts-node --files src/index.ts"
   },
   "dependencies": {

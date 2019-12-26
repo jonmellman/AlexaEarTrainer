@@ -1,6 +1,6 @@
 npm prune --production # Strip devDependencies since they add >9MB
 rm -rf compressed.zip
-zip -r compressed.zip *
+zip -r compressed.zip dist/ node_modules/
 npm install # Re-install devDependencies. Should use local cache and be quick
 
 # aws lambda update-function-code --function-name AlexaEarTrainer --zip-file fileb://compressed.zip
