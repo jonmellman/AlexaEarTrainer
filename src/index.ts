@@ -188,21 +188,18 @@ const NextLevelHandler: Alexa.RequestHandler = {
 
 const StopHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
-		return (
-				// User said Stop or Cancel
-				Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-				(
-					Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent' ||
-					Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
-				)
-			) || (
+		const requestType = Alexa.getRequestType(handlerInput.requestEnvelope)
+		const isIntentWithName = (name: string): boolean => {
+			return requestType === 'IntentRequest' && Alexa.getIntentName(handlerInput.requestEnvelope) === name
+		}
+
+		return isIntentWithName('AMAZON.StopIntent') || isIntentWithName('AMAZON.CancelIntent') || (
 				// Round is over
 				!Alexa.isNewSession(handlerInput.requestEnvelope) &&
 				new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
 
 				// User said No to continuing
-				Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-				Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.NoIntent'
+				isIntentWithName('AMAZON.NoIntent')
 			)
 	},
 	handle(handlerInput) {
