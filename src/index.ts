@@ -101,7 +101,11 @@ const LaunchRequest: RequestHandler = {
 };
 
 const FallbackHandler: Alexa.RequestHandler = {
-	canHandle() {
+	canHandle(handlerInput) {
+		if (isTestEnvironment()) {
+			throw new Error(`Fallback handler invoked request: ${Alexa.getRequestType(handlerInput.requestEnvelope)}, intent: ${Alexa.getIntentName(handlerInput.requestEnvelope)}!`)
+		}
+
 		return true
 	},
 	handle(handlerInput) {
@@ -118,7 +122,8 @@ const FallbackHandler: Alexa.RequestHandler = {
 
 const ErrorHandler: Alexa.ErrorHandler = {
 	canHandle() {
-		return process.env.JEST_WORKER_ID === undefined;
+		// Unhandled errors in tests are easier to debug
+		return !isTestEnvironment();
 	},
 	handle(handlerInput, error) {
 		console.log(`Error handled: ${error.stack}`)
@@ -183,13 +188,16 @@ const NextLevelHandler: Alexa.RequestHandler = {
 
 const StopHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
-		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
-			(
-				// User said Stop
+		return (
+				// User said Stop or Cancel
 				Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-				Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent'
+				(
+					Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent' ||
+					Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
+				)
 			) || (
 				// Round is over
+				!Alexa.isNewSession(handlerInput.requestEnvelope) &&
 				new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
 
 				// User said No to continuing
@@ -245,3 +253,5 @@ export const handler = Alexa.SkillBuilders.custom()
 process.on('unhandledRejection', error => {
 	console.error('unhandledRejection', error);
 });
+
+const isTestEnvironment = (): boolean => process.env.JEST_WORKER_ID !== undefined

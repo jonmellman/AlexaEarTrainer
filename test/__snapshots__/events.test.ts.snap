@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`events interrupt alexa with cancel 1`] = `
+Object {
+  "response": Object {
+    "outputSpeech": Object {
+      "ssml": "<speak>Thanks for playing!</speak>",
+      "type": "SSML",
+    },
+    "shouldEndSession": true,
+  },
+  "sessionAttributes": Object {
+    "currentRound": Object {
+      "intervalDistance": 2,
+      "referenceNote": 60,
+      "roundNumber": 1,
+      "targetNote": 62,
+    },
+    "level": 1,
+    "stats": Array [],
+  },
+  "userAgent": "ask-node/2.7.0 Node/v12.13.0",
+  "version": "1.0",
+}
+`;
+
 exports[`events user-initiated exit event 1`] = `
 Object {
   "response": Object {},

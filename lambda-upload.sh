@@ -1,11 +1,11 @@
-npm prune --production # Strip devDependencies since they add >9MB
+echo "Pruning devDependencies..."
+npm prune --production
 rm -rf compressed.zip
 zip -r compressed.zip dist/ node_modules/
-npm install # Re-install devDependencies. Should use local cache and be quick
+echo "Re-installing devDependencies..."
+npm install
 
-# aws lambda update-function-code --function-name AlexaEarTrainer --zip-file fileb://compressed.zip
-
-# s3 uploading is more reliable on poor connections than uploading directly to lambda.
+# S3 upload instead of directly upload to lambda - it's more reliable on poor connections.
 aws s3 cp compressed.zip s3://alexa-ear-trainer
 aws lambda update-function-code \
   --function-name AlexaEarTrainer \
