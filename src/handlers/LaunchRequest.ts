@@ -1,8 +1,8 @@
 import * as Alexa from 'ask-sdk-core'
 
 import { RequestHandler } from 'ask-sdk-core';
-import { getNewGame } from '../game';
-import { GameSessionManager } from '../GameSessionManager';
+import { getNewGame } from '../game/state';
+import { GameSessionManager } from '../utils'
 import * as speech from '../speech'
 
 export const LaunchRequest: RequestHandler = {

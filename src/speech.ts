@@ -1,6 +1,6 @@
-import { CurrentRound } from "./game"
-import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./music"
-import { getNumberOfLevels, getLevelByNumber } from "./levels"
+import { CurrentRound } from "./game/state"
+import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./game/music"
+import { getNumberOfLevels, getLevelByNumber } from "./game/levels"
 
 const MEDIA_FOLDER = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
 

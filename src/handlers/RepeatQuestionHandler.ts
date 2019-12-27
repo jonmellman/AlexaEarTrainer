@@ -1,7 +1,7 @@
 import * as Alexa from 'ask-sdk-core'
 
 import * as speech from '../speech'
-import { GameSessionManager } from '../GameSessionManager';
+import { GameSessionManager } from '../utils'
 
 export const RepeatQuestionHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {

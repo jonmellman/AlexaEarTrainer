@@ -6,20 +6,20 @@ interface Stat {
 	answer: Interval
 }
 
-interface LevelInProgress {
+interface LevelInProgressState {
 	state: 'LEVEL_IN_PROGRESS',
 	level: number,
 	stats: Stat[],
 	currentRound: CurrentRound
 }
 
-interface LevelComplete {
+interface LevelCompleteState {
 	state: 'LEVEL_COMPLETE',
 	level: number,
 	stats: Stat[]
 }
 
-export type GameSession = LevelInProgress | LevelComplete
+export type GameState = LevelInProgressState | LevelCompleteState
 
 export interface CurrentRound {
 	roundNumber: number
@@ -27,7 +27,7 @@ export interface CurrentRound {
 	targetInterval: Interval
 }
 
-export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => {
+export const getNewGame = (level: GameState['level'] = 1): LevelInProgressState => {
 	return {
 		state: 'LEVEL_IN_PROGRESS',
 		level,
@@ -36,13 +36,13 @@ export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => 
 	}
 }
 
-export const evaluateGuess = (gameSession: LevelInProgress, guessInterval: Interval): LevelInProgress | LevelComplete => {
+export const evaluateGuess = (gameSession: LevelInProgressState, guessInterval: Interval): LevelInProgressState | LevelCompleteState => {
 	const level = getLevelByNumber(gameSession.level)
 
 	const isLevelComplete = gameSession.currentRound.roundNumber === level.numRounds
 	return isLevelComplete ? levelComplete(gameSession, guessInterval) : levelProgress(gameSession, guessInterval)
 
-	function levelComplete(gameSession: LevelInProgress, guessInterval: Interval): LevelComplete {
+	function levelComplete(gameSession: LevelInProgressState, guessInterval: Interval): LevelCompleteState {
 		return {
 			...gameSession,
 			state: 'LEVEL_COMPLETE',
@@ -53,7 +53,7 @@ export const evaluateGuess = (gameSession: LevelInProgress, guessInterval: Inter
 		}
 	}
 
-	function levelProgress(gameSession: LevelInProgress, guessInterval: Interval): LevelInProgress {
+	function levelProgress(gameSession: LevelInProgressState, guessInterval: Interval): LevelInProgressState {
 		return {
 			...gameSession,
 			stats: [...gameSession.stats, {
@@ -65,7 +65,7 @@ export const evaluateGuess = (gameSession: LevelInProgress, guessInterval: Inter
 	}
 }
 
-function getNewRound(level: GameSession['level'], previousRoundNumber: CurrentRound['roundNumber'] = 0): CurrentRound {
+function getNewRound(level: GameState['level'], previousRoundNumber: CurrentRound['roundNumber'] = 0): CurrentRound {
 	return {
 		roundNumber: previousRoundNumber + 1,
 		...getIntervalsForLevel(level)

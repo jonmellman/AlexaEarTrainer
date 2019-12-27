@@ -1,8 +1,8 @@
 import * as Alexa from 'ask-sdk-core'
 
-import { getNewGame } from '../game';
-import { GameSessionManager } from '../GameSessionManager';
-import { getLevelByNumber } from '../levels';
+import { getNewGame } from '../game/state';
+import { GameSessionManager } from '../utils';
+import { getLevelByNumber } from '../game/levels';
 import * as speech from '../speech'
 
 export const ChooseLevelHandler: Alexa.RequestHandler = {

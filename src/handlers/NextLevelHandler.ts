@@ -1,8 +1,8 @@
 import * as Alexa from 'ask-sdk-core'
 
 import * as speech from '../speech'
-import { getNewGame } from '../game';
-import { GameSessionManager } from '../GameSessionManager';
+import { getNewGame } from '../game/state';
+import { GameSessionManager } from '../utils'
 
 export const NextLevelHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
