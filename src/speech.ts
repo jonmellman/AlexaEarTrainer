@@ -1,4 +1,4 @@
-import { CurrentRound, Note } from "./game"
+import { CurrentRound, Note, Key, Interval } from "./game"
 
 const mediaFolder = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
 
@@ -14,10 +14,9 @@ export const levelIntroduction = (level: number) =>
 
 export const question = (currentRound: CurrentRound) =>
 	compose(
-		getNoteAudio(currentRound.referenceNote),
-		getNoteAudio(currentRound.targetNote)
+		getAudioForKey(currentRound.key),
+		getAudioForInterval(currentRound.key, currentRound.targetInterval)
 	)
-	// `${Note[currentRound.referenceNote]}, ${Note[currentRound.targetNote]}`
 
 export const assess = (isCorrect: boolean) =>
 	isCorrect ? '<amazon:emotion name="excited" intensity="high">Right!</amazon:emotion>' : 'Wrong.'
@@ -25,7 +24,24 @@ export const assess = (isCorrect: boolean) =>
 export const roundComplete = (correct: number, total: number, nextLevel: number) =>
 	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
 
-const getNoteAudio = (note: Note): string => getMediaAudio(Note[note])
+const getAudioForKey = (key: Key): string => {
+	switch (key) {
+		case Key.C:
+			return getMediaAudio('C4_E4_G4_C5')
+		default:
+			throw new Error(`Key ${Key[key]} not implemented`)
+	}
+}
+
+const getAudioForInterval = (key: Key, interval: Interval): string => {
+	const note = getNoteForKeyAndInterval(key, interval)
+	return getMediaAudio(Note[note])
+}
+
+const getNoteForKeyAndInterval = (key: Key, interval: Interval): Note => {
+	return (key + interval) + 60 // MIDI offset
+}
+
 
 const getMediaAudio = (filename: string): string =>
 	`<audio src="${mediaFolder}/${filename}.mp3"/>`

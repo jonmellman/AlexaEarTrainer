@@ -42,3 +42,4 @@ A: <question>
 11. Persistence
 12. right/wrong sounds
 13. add aliases for scale degree (two, three etc)
+14. Repeat question when answered wrong

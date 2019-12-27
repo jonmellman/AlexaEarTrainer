@@ -11,16 +11,60 @@ export enum Note {
 	B4 = 71
 }
 
+export enum Key {
+	C = 0,
+	'C#',
+	D,
+	Eb,
+	E,
+	F,
+	'F#',
+	G,
+	Ab,
+	A,
+	Bb,
+	B,
+}
+
+export enum Interval {
+	ROOT = 0,
+	MINOR_SECOND,
+	MAJOR_SECOND,
+	MINOR_THIRD,
+	MAJOR_THIRD,
+	PERFECT_FOURTH,
+	TRITONE,
+	PERFECT_FIFTH,
+	MINOR_SIXTH,
+	MAJOR_SIXTH,
+	MINOR_SEVENTH,
+	MAJOR_SEVENTH,
+	OCTAVE
+}
+
+const Quality = {
+	MAJOR: [
+		Interval.ROOT,
+		Interval.MAJOR_SECOND,
+		Interval.MAJOR_THIRD,
+		Interval.PERFECT_FOURTH,
+		Interval.PERFECT_FIFTH,
+		Interval.MAJOR_SIXTH,
+		Interval.MAJOR_SEVENTH,
+		Interval.OCTAVE
+	]
+}
+
 interface Level {
 	description: string,
-	referenceNotes: Note[],
-	targetNotes: Note[],
+	key: Key,
+	targetIntervals: Interval[],
 	numRounds: number
 }
 
 interface Stat {
-	guess: CurrentRound['intervalDistance'],
-	answer: CurrentRound['intervalDistance']
+	guess: CurrentRound['targetInterval'],
+	answer: CurrentRound['targetInterval']
 }
 
 export type GameSession = LevelInProgress | LevelComplete
@@ -40,27 +84,26 @@ interface LevelComplete {
 
 export interface CurrentRound {
 	roundNumber: number
-	referenceNote: Note
-	targetNote: Note
-	intervalDistance: number
+	key: Key
+	targetInterval: Interval
 }
 
 
 
 export const levels: Level[] = [{
 	description: 'First half of the C Major scale',
-	referenceNotes: [Note.C4],
-	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4],
+	key: Key.C,
+	targetIntervals: Quality.MAJOR.slice(0, Quality.MAJOR.indexOf(Interval.PERFECT_FIFTH)),
 	numRounds: 5
 }, {
 	description: 'Second half of the C Major scale',
-	referenceNotes: [Note.C4],
-	targetNotes: [Note.G4, Note.A4, Note.B4],
+	key: Key.C,
+	targetIntervals: Quality.MAJOR.slice(Quality.MAJOR.indexOf(Interval.PERFECT_FIFTH)),
 	numRounds: 5
 }, {
 	description: 'Full octave of the C Major scale',
-	referenceNotes: [Note.C4],
-	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4, /* TODO: Note.C5 */],
+	key: Key.C,
+	targetIntervals: Quality.MAJOR,
 	numRounds: 5
 }]
 
@@ -83,27 +126,27 @@ export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => 
 	}
 }
 
-export const evaluateGuess = (gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelInProgress | LevelComplete => {
+export const evaluateGuess = (gameSession: LevelInProgress, guessInterval: Interval): LevelInProgress | LevelComplete => {
 	const isLevelComplete = gameSession.currentRound.roundNumber === levels[gameSession.level - 1].numRounds
-	return isLevelComplete ? levelComplete(gameSession, intervalDistanceGuess) : levelProgress(gameSession, intervalDistanceGuess)
+	return isLevelComplete ? levelComplete(gameSession, guessInterval) : levelProgress(gameSession, guessInterval)
 
-	function levelComplete(gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelComplete {
+	function levelComplete(gameSession: LevelInProgress, guessInterval: Interval): LevelComplete {
 		return {
 			...gameSession,
 			state: 'LEVEL_COMPLETE',
 			stats: [...gameSession.stats, {
-				guess: intervalDistanceGuess,
-				answer: gameSession.currentRound.intervalDistance
+				guess: guessInterval,
+				answer: gameSession.currentRound.targetInterval
 			}],
 		}
 	}
 
-	function levelProgress(gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelInProgress {
+	function levelProgress(gameSession: LevelInProgress, guessInterval: Interval): LevelInProgress {
 		return {
 			...gameSession,
 			stats: [...gameSession.stats, {
-				guess: intervalDistanceGuess,
-				answer: gameSession.currentRound.intervalDistance
+				guess: guessInterval,
+				answer: gameSession.currentRound.targetInterval
 			}],
 			currentRound: getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
 		}
@@ -123,13 +166,9 @@ function getNewRound(level: GameSession['level'], previousRoundNumber: CurrentRo
 			throw new Error(`No level configuration for level ${levelNumber}!`)
 		}
 
-		const referenceNote = getRandomElement(level.referenceNotes)
-		const targetNote = getRandomElement(level.targetNotes)
-
 		return {
-			referenceNote,
-			targetNote,
-			intervalDistance: targetNote - referenceNote
+			key: level.key,
+			targetInterval: getRandomElement(level.targetIntervals)
 		}
 
 		function getRandomElement<T>(elements: Array<T>): T {
