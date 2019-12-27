@@ -1,18 +1,5 @@
-import { Interval, Key, Scales } from "./music"
-
-// Nothing Alexa-specific in this file.
-
-interface Level {
-	description: string,
-	numRounds: number,
-
-	key: Key,
-	targetIntervals: Interval[],
-	isMajor: boolean
-
-	// TODO: use this
-	octaves: number
-}
+import { Interval, Key } from "./music"
+import { getLevelByNumber } from "./levels"
 
 interface Stat {
 	guess: Interval,
@@ -40,57 +27,6 @@ export interface CurrentRound {
 	targetInterval: Interval
 }
 
-export const levels: Level[] = [{
-	description: 'First half of the C Major scale',
-	numRounds: 5,
-	key: Key.C,
-	targetIntervals: Scales.MAJOR.firstHalf(),
-	isMajor: Scales.MAJOR.isMajor(),
-
-	octaves: 1
-}, {
-	description: 'Second half of the C Major scale',
-	numRounds: 5,
-	key: Key.C,
-	targetIntervals: Scales.MAJOR.secondHalf(),
-	isMajor: Scales.MAJOR.isMajor(),
-	octaves: 1
-}, {
-	description: 'Full octave of the C Major scale',
-	numRounds: 10,
-	key: Key.C,
-	targetIntervals: Scales.MAJOR.full(),
-	isMajor: Scales.MAJOR.isMajor(),
-	octaves: 1
-}/* , {
-	description: 'Multiple octaves of the C Major scale',
-	numRounds: 5,
-	key: Key.C,
-	targetIntervals: Scales.MAJOR,
-	octaves: 3 // TODO: implement multiple octaves
-} */, {
-	description: 'First half of the C Minor scale',
-	numRounds: 5,
-	key: Key.C,
-	targetIntervals: Scales.MINOR.firstHalf(),
-	isMajor: Scales.MINOR.isMajor(),
-	octaves: 1
-}, {
-	description: 'Second half of the C Minor scale',
-	numRounds: 5,
-	key: Key.C,
-	targetIntervals: Scales.MINOR.secondHalf(),
-	isMajor: Scales.MINOR.isMajor(),
-	octaves: 1
-}, {
-	description: 'Full octave of the C Minor scale',
-	numRounds: 10,
-	key: Key.C,
-	targetIntervals: Scales.MINOR.full(),
-	isMajor: Scales.MINOR.isMajor(),
-	octaves: 1
-}]
-
 export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => {
 	return {
 		state: 'LEVEL_IN_PROGRESS',
@@ -101,7 +37,9 @@ export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => 
 }
 
 export const evaluateGuess = (gameSession: LevelInProgress, guessInterval: Interval): LevelInProgress | LevelComplete => {
-	const isLevelComplete = gameSession.currentRound.roundNumber === levels[gameSession.level - 1].numRounds
+	const level = getLevelByNumber(gameSession.level)
+
+	const isLevelComplete = gameSession.currentRound.roundNumber === level.numRounds
 	return isLevelComplete ? levelComplete(gameSession, guessInterval) : levelProgress(gameSession, guessInterval)
 
 	function levelComplete(gameSession: LevelInProgress, guessInterval: Interval): LevelComplete {
@@ -134,7 +72,7 @@ function getNewRound(level: GameSession['level'], previousRoundNumber: CurrentRo
 	}
 
 	function getIntervalsForLevel(levelNumber: number) {
-		const level = levels[levelNumber - 1]
+		const level = getLevelByNumber(levelNumber)
 
 		if (!level) {
 			throw new Error(`No level configuration for level ${levelNumber}!`)

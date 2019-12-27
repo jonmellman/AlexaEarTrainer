@@ -6,10 +6,10 @@ import {
 import {
 	getNewGame,
 	evaluateGuess,
-	levels,
 } from './game'
 import { GameSessionManager } from './GameSessionManager'
 import * as speech from './speech';
+import { getLevelByNumber } from './levels';
 
 const AnswerHandler: RequestHandler = {
 	canHandle(handlerInput) {
@@ -243,7 +243,11 @@ const ChooseLevelHandler: Alexa.RequestHandler = {
 			throw new Error(`Unable to parse level input '${levelString}'`)
 		}
 
-		if (!levels[levelNumber - 1]) {
+		try {
+			getLevelByNumber(levelNumber)
+		} catch(e) {
+
+
 			return handlerInput.responseBuilder
 				.speak(speech.invalidLevel())
 				.withShouldEndSession(false)

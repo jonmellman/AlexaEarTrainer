@@ -1,5 +1,6 @@
-import { CurrentRound, levels } from "./game"
+import { CurrentRound } from "./game"
 import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./music"
+import { getNumberOfLevels, getLevelByNumber } from "./levels"
 
 const MEDIA_FOLDER = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
 
@@ -23,7 +24,7 @@ export const question = (currentRound: CurrentRound, levelNumber: number) =>
 	)
 
 const getAudioForReference = (key: Key, levelNumber: number): string => {
-	const isMajor = levels[levelNumber].isMajor
+	const isMajor = getLevelByNumber(levelNumber).isMajor
 
 	switch (key) {
 		case Key.C:
@@ -48,7 +49,7 @@ export const goodbye = () =>
 	'Thanks for playing!'
 
 export const invalidLevel = () =>
-	`Choose a level between 1 and ${levels.length}`
+	`Choose a level between 1 and ${getNumberOfLevels()}`
 
 /*
 	Between levels:

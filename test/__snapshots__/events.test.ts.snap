@@ -1,5 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`events go to level 6 1`] = `
+Object {
+  "response": Object {
+    "outputSpeech": Object {
+      "ssml": "<speak>level 6.<break strength=\\"strong\\"/><audio src=\\"https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media/reference_C-MINOR.mp3\\"/><break strength=\\"strong\\"/><audio src=\\"https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media/C4.mp3\\"/></speak>",
+      "type": "SSML",
+    },
+    "reprompt": Object {
+      "outputSpeech": Object {
+        "ssml": "<speak><audio src=\\"https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media/reference_C-MINOR.mp3\\"/><break strength=\\"strong\\"/><audio src=\\"https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media/C4.mp3\\"/></speak>",
+        "type": "SSML",
+      },
+    },
+    "shouldEndSession": false,
+  },
+  "sessionAttributes": Object {
+    "currentRound": Object {
+      "key": 0,
+      "roundNumber": 1,
+      "targetInterval": 0,
+    },
+    "level": 6,
+    "state": "LEVEL_IN_PROGRESS",
+    "stats": Array [],
+  },
+  "userAgent": "ask-node/2.7.0 Node/v12.13.0",
+  "version": "1.0",
+}
+`;
+
 exports[`events interrupt alexa with cancel 1`] = `
 Object {
   "response": Object {
