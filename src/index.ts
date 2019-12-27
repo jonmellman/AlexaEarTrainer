@@ -13,16 +13,20 @@ import * as speech from './speech';
 const AnswerHandler: RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
-			// Round is in progress
-			new GameSessionManager(handlerInput).getSession().currentRound !== undefined &&
+			new GameSessionManager(handlerInput).getSession().state === 'LEVEL_IN_PROGRESS' &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
 			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AnswerIntent'
 	},
 	async handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
+		const previousRoundGameSession = gameSessionManager.getSession()
+
+		if (previousRoundGameSession.state !== 'LEVEL_IN_PROGRESS') {
+			throw new Error(`AnswerHandler invoked when state is ${previousRoundGameSession.state}`)
+		}
 
 		const intervalDistanceGuess = extractIntervalDistanceFromAnswer(handlerInput)
-		const gameSession = evaluateGuess(gameSessionManager.getSession(), intervalDistanceGuess)
+		const gameSession = evaluateGuess(previousRoundGameSession, intervalDistanceGuess)
 
 		const stat = gameSession.stats[gameSession.stats.length - 1]
 		const isCorrect = stat.guess === stat.answer
@@ -37,7 +41,7 @@ const AnswerHandler: RequestHandler = {
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.assess(isCorrect),
-				(gameSession.currentRound ? speech.question(gameSession.currentRound) : speech.roundComplete(counts.correct, counts.total, gameSession.level + 1))
+				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound) : speech.roundComplete(counts.correct, counts.total, gameSession.level + 1))
 			))
 			.withShouldEndSession(false)
 			.getResponse();
@@ -80,23 +84,16 @@ const LaunchRequest: RequestHandler = {
 		const gameSessionManager = new GameSessionManager(handlerInput)
 		const level = 1
 
-		// Set state for new game
-		gameSessionManager.setSession(getNewGame(level))
-
-		// Return UI for new game
-		const currentRound = gameSessionManager.getSession().currentRound
-
-		if (!currentRound) {
-			throw new Error('Expected currentRound when starting a new game')
-		}
+		const gameSession = getNewGame(level)
+		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.welcome(),
 				speech.levelIntroduction(level),
-				speech.question(currentRound)
+				speech.question(gameSession.currentRound)
 			))
-			.reprompt('Bee boop') // TODO
+			.reprompt(speech.question(gameSession.currentRound))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
@@ -159,33 +156,23 @@ const SessionEndedRequestHandler: Alexa.RequestHandler = {
 const NextLevelHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
-
-			// Round is over
-			new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
-
-			// User said yes
+			new GameSessionManager(handlerInput).getSession().state === 'LEVEL_COMPLETE' &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent';
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent'
 	},
 	handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
 		const level = gameSessionManager.getSession().level + 1
 
-		// Set state for new game
-		gameSessionManager.setSession(getNewGame(level))
-
-		// Return UI for new game
-		const currentRound = gameSessionManager.getSession().currentRound
-
-		if (!currentRound) {
-			throw new Error('Expected currentRound when starting a new game')
-		}
+		const gameSession = getNewGame(level)
+		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.levelIntroduction(level),
-				speech.question(currentRound)
+				speech.question(gameSession.currentRound)
 			))
+			.reprompt(speech.question(gameSession.currentRound))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
@@ -199,11 +186,9 @@ const StopHandler: Alexa.RequestHandler = {
 		}
 
 		return isIntentWithName('AMAZON.StopIntent') || isIntentWithName('AMAZON.CancelIntent') || (
-				// Round is over
+				// Round is over and user said no to continuing
 				!Alexa.isNewSession(handlerInput.requestEnvelope) &&
-				new GameSessionManager(handlerInput).getSession().currentRound === undefined &&
-
-				// User said No to continuing
+				new GameSessionManager(handlerInput).getSession().state === 'LEVEL_COMPLETE' &&
 				isIntentWithName('AMAZON.NoIntent')
 			)
 	},
@@ -218,7 +203,7 @@ const StopHandler: Alexa.RequestHandler = {
 const RepeatQuestionHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
 		return !Alexa.isNewSession(handlerInput.requestEnvelope) &&
-			new GameSessionManager(handlerInput).getSession().currentRound !== undefined &&
+			new GameSessionManager(handlerInput).getSession().state === 'LEVEL_IN_PROGRESS' &&
 			Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
 			Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.RepeatIntent'
 	},
@@ -226,8 +211,8 @@ const RepeatQuestionHandler: Alexa.RequestHandler = {
 		const gameSessionManager = new GameSessionManager(handlerInput)
 		const gameSession = gameSessionManager.getSession()
 
-		if (!gameSession.currentRound) {
-			throw new Error('Asked to repeat a question, but no currentRound!')
+		if (gameSession.state !== 'LEVEL_IN_PROGRESS') {
+			throw new Error('Asked to repeat a question, but no level in progress')
 		}
 
 		return handlerInput.responseBuilder

@@ -19,12 +19,12 @@ A: <question>
 
 ## Creating media
 
-1. Logic software instrument
+1. Logic software instrument. Tempo 120 BPM. 2 measures. Velocity 98.
 1. CMD+B to "bounce project or section" as MP3. Bit rate mono/stero both 48 kbps
 1. Convert to Alexa-compatible MP3 format:
-```sh
-ffmpeg -i <input-file> -ac 2 -codec:a libmp3lame -b:a 48k -ar 24000 -write_xing 0 <output-file>
-```
+	```sh
+	./convert_media.sh
+	```
 1. Remove the input file from media/ directory before uploading.
 
 

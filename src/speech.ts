@@ -20,7 +20,7 @@ export const question = (currentRound: CurrentRound) =>
 	// `${Note[currentRound.referenceNote]}, ${Note[currentRound.targetNote]}`
 
 export const assess = (isCorrect: boolean) =>
-	isCorrect ? 'Right.' : 'Wrong.'
+	isCorrect ? '<amazon:emotion name="excited" intensity="high">Right!</amazon:emotion>' : 'Wrong.'
 
 export const roundComplete = (correct: number, total: number, nextLevel: number) =>
 	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
@@ -32,7 +32,21 @@ const getMediaAudio = (filename: string): string =>
 
 
 /*
-	<prosody rate="x-slow">Welcome to ear trainer</prosody><audio src="https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media/welcome.mp3"/>
+	Between levels:
+		<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_bridge_02"/>
+
+		Level up:
+			<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_tally_positive_01"/>
+
+		No level up:
+			<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_tally_negative_01"/>
+
+	Wrong answer:
+		<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_neutral_response_02"/>Try again!
+
+	Right answer:
+		<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_player1_01"/>
+		<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_positive_response_01"/>
 
 	Level up:
 		<say-as interpret-as="interjection">boom</say-as>

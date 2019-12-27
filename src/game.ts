@@ -23,10 +23,19 @@ interface Stat {
 	answer: CurrentRound['intervalDistance']
 }
 
-export interface GameSession {
+export type GameSession = LevelInProgress | LevelComplete
+
+interface LevelInProgress {
+	state: 'LEVEL_IN_PROGRESS',
 	level: number,
 	stats: Stat[],
-	currentRound?: CurrentRound // undefined when round is over
+	currentRound: CurrentRound
+}
+
+interface LevelComplete {
+	state: 'LEVEL_COMPLETE',
+	level: number,
+	stats: Stat[]
 }
 
 export interface CurrentRound {
@@ -35,6 +44,8 @@ export interface CurrentRound {
 	targetNote: Note
 	intervalDistance: number
 }
+
+
 
 export const levels: Level[] = [{
 	description: 'First half of the C Major scale',
@@ -49,7 +60,7 @@ export const levels: Level[] = [{
 }, {
 	description: 'Full octave of the C Major scale',
 	referenceNotes: [Note.C4],
-	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4],
+	targetNotes: [Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4, /* TODO: Note.C5 */],
 	numRounds: 5
 }]
 
@@ -63,31 +74,40 @@ export const levels: Level[] = [{
 // Level 2: (C4), (G4, A4, B4)
 // Level 3: (C4), (C4, D4, E4, F4, G4, A4, B4)
 
-export const getNewGame = (level: GameSession['level'] = 1): GameSession => {
+export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => {
 	return {
+		state: 'LEVEL_IN_PROGRESS',
 		level,
 		stats: [],
 		currentRound: getNewRound(level)
 	}
 }
 
-export const evaluateGuess = (gameSession: GameSession, intervalDistanceGuess: CurrentRound['intervalDistance']): GameSession => {
-	if (!gameSession.currentRound) {
-		throw new Error('Cannot evaluate guess when there is no currentRound!')
+export const evaluateGuess = (gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelInProgress | LevelComplete => {
+	const isLevelComplete = gameSession.currentRound.roundNumber === levels[gameSession.level - 1].numRounds
+	return isLevelComplete ? levelComplete(gameSession, intervalDistanceGuess) : levelProgress(gameSession, intervalDistanceGuess)
+
+	function levelComplete(gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelComplete {
+		return {
+			...gameSession,
+			state: 'LEVEL_COMPLETE',
+			stats: [...gameSession.stats, {
+				guess: intervalDistanceGuess,
+				answer: gameSession.currentRound.intervalDistance
+			}],
+		}
 	}
 
-	const isDoneWithLevel = gameSession.currentRound.roundNumber === levels[gameSession.level - 1].numRounds
-
-	const nextGameSession = {
-		...gameSession,
-		stats: [...gameSession.stats, {
-			guess: intervalDistanceGuess,
-			answer: gameSession.currentRound.intervalDistance
-		}],
-		currentRound: isDoneWithLevel ? undefined : getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
+	function levelProgress(gameSession: LevelInProgress, intervalDistanceGuess: CurrentRound['intervalDistance']): LevelInProgress {
+		return {
+			...gameSession,
+			stats: [...gameSession.stats, {
+				guess: intervalDistanceGuess,
+				answer: gameSession.currentRound.intervalDistance
+			}],
+			currentRound: getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
+		}
 	}
-
-	return nextGameSession
 }
 
 function getNewRound(level: GameSession['level'], previousRoundNumber: CurrentRound['roundNumber'] = 0): CurrentRound {
