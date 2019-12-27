@@ -1,5 +1,6 @@
 // https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
 export enum Note {
+	// TODO
 	C4 = 60,
 	D4 = 62,
 	E4 = 64,
@@ -8,6 +9,7 @@ export enum Note {
 	A4 = 69,
 	B4 = 71,
 	C5 = 72
+	// TODO
 }
 
 export enum Key {
@@ -52,4 +54,14 @@ export const Quality = {
 		Interval.MAJOR_SEVENTH,
 		Interval.OCTAVE
 	]
+}
+
+export const getNoteFromKeyAtInterval = (key: Key, interval: Interval): Note => {
+	const note = (key + interval) + 60 // MIDI offset
+
+	if (!Note[note]) {
+		throw new Error(`Unsupported note: ${note}. Key was ${Key[key]} and Interval was ${Interval[interval]}`)
+	}
+
+	return note
 }

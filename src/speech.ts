@@ -1,6 +1,10 @@
-import { CurrentRound, Note, Key, Interval } from "./game"
+import { CurrentRound, levels } from "./game"
+import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./music"
 
-const mediaFolder = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
+const MEDIA_FOLDER = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
+
+const getMediaAudio = (filename: string): string =>
+	`<audio src="${MEDIA_FOLDER}/${filename}.mp3"/>`
 
 export const compose = (...speeches: String[]): string =>
 	// Join with sentence break
@@ -14,17 +18,11 @@ export const levelIntroduction = (level: number) =>
 
 export const question = (currentRound: CurrentRound) =>
 	compose(
-		getAudioForKey(currentRound.key),
+		getAudioForReference(currentRound.key),
 		getAudioForInterval(currentRound.key, currentRound.targetInterval)
 	)
 
-export const assess = (isCorrect: boolean) =>
-	isCorrect ? '<amazon:emotion name="excited" intensity="high">Right!</amazon:emotion>' : 'Wrong.'
-
-export const roundComplete = (correct: number, total: number, nextLevel: number) =>
-	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
-
-const getAudioForKey = (key: Key): string => {
+const getAudioForReference = (key: Key): string => {
 	switch (key) {
 		case Key.C:
 			return getMediaAudio('C4_E4_G4_C5')
@@ -34,24 +32,21 @@ const getAudioForKey = (key: Key): string => {
 }
 
 const getAudioForInterval = (key: Key, interval: Interval): string => {
-	const note = getNoteForKeyAndInterval(key, interval)
+	const note = getNoteFromKeyAtInterval(key, interval)
 	return getMediaAudio(Note[note])
 }
 
-const getNoteForKeyAndInterval = (key: Key, interval: Interval): Note => {
-	const note = (key + interval) + 60 // MIDI offset
+export const assess = (isCorrect: boolean) =>
+	isCorrect ? '<amazon:emotion name="excited" intensity="low">Right!</amazon:emotion>' : 'Wrong.'
 
-	if (!Note[note]) {
-		throw new Error(`Unsupported note: ${note}. Key was ${Key[key]} and Interval was ${Interval[interval]}`)
-	}
+export const levelComplete = (correct: number, total: number, nextLevel: number) =>
+	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
 
-	return note
-}
+export const goodbye = () =>
+	'Thanks for playing!'
 
-
-const getMediaAudio = (filename: string): string =>
-	`<audio src="${mediaFolder}/${filename}.mp3"/>`
-
+export const invalidLevel = () =>
+	`Choose a level between 1 and ${levels.length}`
 
 /*
 	Between levels:

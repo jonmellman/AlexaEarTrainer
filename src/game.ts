@@ -14,8 +14,6 @@ interface Stat {
 	answer: CurrentRound['targetInterval']
 }
 
-export type GameSession = LevelInProgress | LevelComplete
-
 interface LevelInProgress {
 	state: 'LEVEL_IN_PROGRESS',
 	level: number,
@@ -28,6 +26,8 @@ interface LevelComplete {
 	level: number,
 	stats: Stat[]
 }
+
+export type GameSession = LevelInProgress | LevelComplete
 
 export interface CurrentRound {
 	roundNumber: number

@@ -42,7 +42,7 @@ const AnswerHandler: RequestHandler = {
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.assess(isCorrect),
-				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound) : speech.roundComplete(counts.correct, counts.total, gameSession.level + 1))
+				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound) : speech.levelComplete(counts.correct, counts.total, gameSession.level + 1))
 			))
 			.withShouldEndSession(false)
 			.getResponse();
@@ -195,7 +195,7 @@ const StopHandler: Alexa.RequestHandler = {
 	},
 	handle(handlerInput) {
 		return handlerInput.responseBuilder
-			.speak('Thanks for playing!')
+			.speak(speech.goodbye())
 			.withShouldEndSession(true)
 			.getResponse();
 	},
@@ -245,9 +245,7 @@ const ChooseLevelHandler: Alexa.RequestHandler = {
 
 		if (!levels[level - 1]) {
 			return handlerInput.responseBuilder
-				.speak(
-					`Levels must be between 1 and ${levels.length}`
-				)
+				.speak(speech.invalidLevel())
 				.withShouldEndSession(false)
 				.getResponse();
 		}
