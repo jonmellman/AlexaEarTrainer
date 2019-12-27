@@ -2,13 +2,18 @@
 export enum Note {
 	// TODO
 	C4 = 60,
-	D4 = 62,
-	E4 = 64,
-	F4 = 65,
-	G4 = 67,
-	A4 = 69,
-	B4 = 71,
-	C5 = 72
+	'C#4',
+	D4,
+	Eb4,
+	E4,
+	F4,
+	'F#4',
+	G4,
+	Ab4,
+	A4,
+	Bb4,
+	B4,
+	C5,
 	// TODO
 }
 
@@ -43,8 +48,16 @@ export enum Interval {
 	OCTAVE
 }
 
-export const Quality = {
-	MAJOR: [
+class Scale {
+	constructor(private readonly intervals: Interval[]) { }
+	isMajor = () => this.intervals.includes(Interval.MAJOR_THIRD)
+	firstHalf = () => this.intervals.slice(0, this.intervals.indexOf(Interval.PERFECT_FIFTH))
+	secondHalf = () => this.intervals.slice(this.intervals.indexOf(Interval.PERFECT_FIFTH))
+	full = () => this.intervals
+}
+
+export const Scales = {
+	MAJOR: new Scale([
 		Interval.ROOT,
 		Interval.MAJOR_SECOND,
 		Interval.MAJOR_THIRD,
@@ -53,7 +66,17 @@ export const Quality = {
 		Interval.MAJOR_SIXTH,
 		Interval.MAJOR_SEVENTH,
 		Interval.OCTAVE
-	]
+	]),
+	MINOR: new Scale([
+		Interval.ROOT,
+		Interval.MAJOR_SECOND,
+		Interval.MINOR_THIRD,
+		Interval.PERFECT_FOURTH,
+		Interval.PERFECT_FIFTH,
+		Interval.MINOR_SIXTH,
+		Interval.MINOR_SEVENTH,
+		Interval.OCTAVE
+	])
 }
 
 export const getNoteFromKeyAtInterval = (key: Key, interval: Interval): Note => {

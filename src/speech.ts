@@ -16,16 +16,18 @@ export const welcome = () =>
 export const levelIntroduction = (level: number) =>
 	`level ${level}.`
 
-export const question = (currentRound: CurrentRound) =>
+export const question = (currentRound: CurrentRound, levelNumber: number) =>
 	compose(
-		getAudioForReference(currentRound.key),
+		getAudioForReference(currentRound.key, levelNumber),
 		getAudioForInterval(currentRound.key, currentRound.targetInterval)
 	)
 
-const getAudioForReference = (key: Key): string => {
+const getAudioForReference = (key: Key, levelNumber: number): string => {
+	const isMajor = levels[levelNumber].isMajor
+
 	switch (key) {
 		case Key.C:
-			return getMediaAudio('C4_E4_G4_C5')
+			return getMediaAudio(`reference_${Key[key]}-${isMajor ? 'MAJOR' : 'MINOR'}`)
 		default:
 			throw new Error(`Key ${Key[key]} not implemented`)
 	}

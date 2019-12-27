@@ -31,15 +31,19 @@ A: <question>
 ## TODO
 
 1. Add more levels
+   1. ~~Minor~~
+   2. Octave
+   3. Major with chromatics
+   4. Minor with chromatics
 2. Logic for when to level up
-3. "Start at level _"
+3. ~~"Start at level _"~~
 4. "Explain level _"
 5. AMAZON.HelpIntent
 6. ~~AMAZON.RepeatIntent~~
 7. AMAZON.FallbackIntent
 8. ~~AMAZON.StopIntent~~
-9. ~~AMAZON.NavigateHomeIntent~~
-11. Persistence
-12. right/wrong sounds
-13. add aliases for scale degree (two, three etc)
-14. Repeat question when answered wrong
+9.  ~~AMAZON.NavigateHomeIntent~~
+10. Persistence
+11. right/wrong sounds
+12. add aliases for scale degree (two, three etc)
+13. Repeat question when answered wrong

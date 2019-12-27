@@ -1,17 +1,22 @@
-import { Interval, Key, Quality } from "./music"
+import { Interval, Key, Scales } from "./music"
 
 // Nothing Alexa-specific in this file.
 
 interface Level {
 	description: string,
+	numRounds: number,
+
 	key: Key,
 	targetIntervals: Interval[],
-	numRounds: number
+	isMajor: boolean
+
+	// TODO: use this
+	octaves: number
 }
 
 interface Stat {
-	guess: CurrentRound['targetInterval'],
-	answer: CurrentRound['targetInterval']
+	guess: Interval,
+	answer: Interval
 }
 
 interface LevelInProgress {
@@ -35,23 +40,55 @@ export interface CurrentRound {
 	targetInterval: Interval
 }
 
-
-
 export const levels: Level[] = [{
 	description: 'First half of the C Major scale',
+	numRounds: 5,
 	key: Key.C,
-	targetIntervals: Quality.MAJOR.slice(0, Quality.MAJOR.indexOf(Interval.PERFECT_FIFTH)),
-	numRounds: 5
+	targetIntervals: Scales.MAJOR.firstHalf(),
+	isMajor: Scales.MAJOR.isMajor(),
+
+	octaves: 1
 }, {
 	description: 'Second half of the C Major scale',
+	numRounds: 5,
 	key: Key.C,
-	targetIntervals: Quality.MAJOR.slice(Quality.MAJOR.indexOf(Interval.PERFECT_FIFTH)),
-	numRounds: 5
+	targetIntervals: Scales.MAJOR.secondHalf(),
+	isMajor: Scales.MAJOR.isMajor(),
+	octaves: 1
 }, {
 	description: 'Full octave of the C Major scale',
+	numRounds: 10,
 	key: Key.C,
-	targetIntervals: Quality.MAJOR,
-	numRounds: 5
+	targetIntervals: Scales.MAJOR.full(),
+	isMajor: Scales.MAJOR.isMajor(),
+	octaves: 1
+}/* , {
+	description: 'Multiple octaves of the C Major scale',
+	numRounds: 5,
+	key: Key.C,
+	targetIntervals: Scales.MAJOR,
+	octaves: 3 // TODO: implement multiple octaves
+} */, {
+	description: 'First half of the C Minor scale',
+	numRounds: 5,
+	key: Key.C,
+	targetIntervals: Scales.MINOR.firstHalf(),
+	isMajor: Scales.MINOR.isMajor(),
+	octaves: 1
+}, {
+	description: 'Second half of the C Minor scale',
+	numRounds: 5,
+	key: Key.C,
+	targetIntervals: Scales.MINOR.secondHalf(),
+	isMajor: Scales.MINOR.isMajor(),
+	octaves: 1
+}, {
+	description: 'Full octave of the C Minor scale',
+	numRounds: 10,
+	key: Key.C,
+	targetIntervals: Scales.MINOR.full(),
+	isMajor: Scales.MINOR.isMajor(),
+	octaves: 1
 }]
 
 export const getNewGame = (level: GameSession['level'] = 1): LevelInProgress => {

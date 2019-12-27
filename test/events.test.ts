@@ -359,4 +359,122 @@ describe('events', () => {
 		expect.assertions(1)
 		await expect(testHandler(input)).rejects.toThrowError('Fallback handler invoked request')
 	})
+
+	it('go to level 6', async () => {
+		const input = {
+			"version": "1.0",
+			"session": {
+				"new": false,
+				"sessionId": "amzn1.echo-api.session.16a67f76-8aed-4dbc-aedb-96eee5aacb13",
+				"application": {
+					"applicationId": "amzn1.ask.skill.c8898de4-05ca-44f6-8710-24a56e97933d"
+				},
+				"attributes": {
+					"currentRound": {
+						"roundNumber": 2,
+						"key": 0,
+						"targetInterval": 0
+					},
+					"level": 4,
+					"stats": [
+						{
+							"guess": 0,
+							"answer": 0
+						}
+					],
+					"state": "LEVEL_IN_PROGRESS"
+				},
+				"user": {
+					"userId": "amzn1.ask.account.AGN5YIY47D3D4YOSYFDGIOEAX4RZUUADVSUNRA2KB3RHX6VHES37TP4KQSNOAJVWTZFUIZOGCE547G3JH5P4G4IBA4JXWNZWLZGJTWAFS4DMITP56UXIQDFJFQEXR3PKFGWAMYDLD4ATC77FMN4EDXOR5X7BDX4ZQ2JXD5PRRIMLH3KLMMVOXWO2WVDLXXE753WRCGS7MY6CBGQ"
+				}
+			},
+			"context": {
+				"System": {
+					"application": {
+						"applicationId": "amzn1.ask.skill.c8898de4-05ca-44f6-8710-24a56e97933d"
+					},
+					"user": {
+						"userId": "amzn1.ask.account.AGN5YIY47D3D4YOSYFDGIOEAX4RZUUADVSUNRA2KB3RHX6VHES37TP4KQSNOAJVWTZFUIZOGCE547G3JH5P4G4IBA4JXWNZWLZGJTWAFS4DMITP56UXIQDFJFQEXR3PKFGWAMYDLD4ATC77FMN4EDXOR5X7BDX4ZQ2JXD5PRRIMLH3KLMMVOXWO2WVDLXXE753WRCGS7MY6CBGQ"
+					},
+					"device": {
+						"deviceId": "amzn1.ask.device.AGPUGKPHH5FCF4QZEWHQZOMN4CZ5DA4FJ2D44VQLQN6VAMXMBHVZUDJBRD7WI2VATOBYXSBE76F3UH36AWOT4X7WBB2WSGEB6BASOD4OLITOJERFC7YG5R7MD7EQFEIP7LDK2PGPHJFT74OTJ4FXAPPCZCHNH2TFEHPGZUXBWV7O3QP7AVA2W",
+						"supportedInterfaces": {}
+					},
+					"apiEndpoint": "https://api.amazonalexa.com",
+					"apiAccessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJhdWQiOiJodHRwczovL2FwaS5hbWF6b25hbGV4YS5jb20iLCJpc3MiOiJBbGV4YVNraWxsS2l0Iiwic3ViIjoiYW16bjEuYXNrLnNraWxsLmM4ODk4ZGU0LTA1Y2EtNDRmNi04NzEwLTI0YTU2ZTk3OTMzZCIsImV4cCI6MTU3NzQyNjI0OSwiaWF0IjoxNTc3NDI1OTQ5LCJuYmYiOjE1Nzc0MjU5NDksInByaXZhdGVDbGFpbXMiOnsiY29udGV4dCI6IkFBQUFBQUFBQUFBM25rOG5QcWhLRUl3b0s4NEFubndqS2dFQUFBQUFBQUNrT08xVEtlSWxKZWwzbTBjaDhKSGo4OGEwbDdITEIwR2phN0xVOTFhM0x3SFJxZnJVREl1TGtzRFlPaFhzUU9kRHpVdXlOb09ZQ1BsQ2tseG4rU1p6VllER05XY2dUOVUxMmxuSzJ3Z3dLaVJkajVOTHRONXVFYzZLRzUrZDNiNDdja3ovcVkwSU5Ea2orYmhGTCtWZjZPNVpTQXA0M2x5ZktJMkR3VWJuK1FaazhsbXhDMlBrUEtYdmxJU2RWWGt6SGU3elU5WkN3S0FwUFBGS1FXR3N4TVlXcXEzd0d4MGlwN2FhbjBYeUVmS2xQRVVGZERBNDhEVEtEblZjbzNjLzFiYXcvZlZ3cHF1K0xDSEw5RFcrUVR3bHFNMHJCbHFDa2pnSmhWU0dHWkMxejhmdFVyUm8vNTdaU1pGV054S3JmRkxjam5XbUNoUTY3c1d3VFdxdzErQUUrb2FJT2k2S0RLb29wSEtqMzRzb1RZSUo1RXFERDN3OVJSN1dodGVXTkdWZUJPU00vMWZCIiwiY29uc2VudFRva2VuIjpudWxsLCJkZXZpY2VJZCI6ImFtem4xLmFzay5kZXZpY2UuQUdQVUdLUEhINUZDRjRRWkVXSFFaT01ONENaNURBNEZKMkQ0NFZRTFFONlZBTVhNQkhWWlVESkJSRDdXSTJWQVRPQllYU0JFNzZGM1VIMzZBV09UNFg3V0JCMldTR0VCNkJBU09ENE9MSVRPSkVSRkM3WUc1UjdNRDdFUUZFSVA3TERLMlBHUEhKRlQ3NE9USjRGWEFQUENaQ0hOSDJURkVIUEdaVVhCV1Y3TzNRUDdBVkEyVyIsInVzZXJJZCI6ImFtem4xLmFzay5hY2NvdW50LkFHTjVZSVk0N0QzRDRZT1NZRkRHSU9FQVg0UlpVVUFEVlNVTlJBMktCM1JIWDZWSEVTMzdUUDRLUVNOT0FKVldUWkZVSVpPR0NFNTQ3RzNKSDVQNEc0SUJBNEpYV05aV0xaR0pUV0FGUzRETUlUUDU2VVhJUURGSkZRRVhSM1BLRkdXQU1ZRExENEFUQzc3Rk1ONEVEWE9SNVg3QkRYNFpRMkpYRDVQUlJJTUxIM0tMTU1WT1hXTzJXVkRMWFhFNzUzV1JDR1M3TVk2Q0JHUSJ9fQ.EKttx2AVH0w23PEAdTyiPr-0WgfkYS_j0fcZjG5fyHujVwy1V49VnnfsAFB5uZpoesYv377VGzv822Ci7wrvYyLp0YWgk_yUIwCw-JgA8-RB3Iau0WSbfbmmOULCmgC3HP5a_K5f1x6AN0NrcV6MxgUNP7oGMmihDX7589D-DFiZgO3rySKI43fOZrXyp_FbmcZWfmWgW86G0WQPKMhFpucq1xHttF3mpQ5xG-6IBa6XoeHISO7fiYX4dvGaDtjfqW5SAe98qr8Efd-_KaCX7tzNY6yDCaICh6d6HELV64QlRDqcHSUAoFW1tPKuarmlX4m4hyl-tQxapFCz5m_-Ag"
+				},
+				"Viewport": {
+					"experiences": [
+						{
+							"arcMinuteWidth": 246,
+							"arcMinuteHeight": 144,
+							"canRotate": false,
+							"canResize": false
+						}
+					],
+					"shape": "RECTANGLE",
+					"pixelWidth": 1024,
+					"pixelHeight": 600,
+					"dpi": 160,
+					"currentPixelWidth": 1024,
+					"currentPixelHeight": 600,
+					"touch": [
+						"SINGLE"
+					],
+					"video": {
+						"codecs": [
+							"H_264_42",
+							"H_264_41"
+						]
+					}
+				},
+				"Viewports": [
+					{
+						"type": "APL",
+						"id": "main",
+						"shape": "RECTANGLE",
+						"dpi": 160,
+						"presentationType": "STANDARD",
+						"canRotate": false,
+						"configuration": {
+							"current": {
+								"video": {
+									"codecs": [
+										"H_264_42",
+										"H_264_41"
+									]
+								},
+								"size": {
+									"type": "DISCRETE",
+									"pixelWidth": 1024,
+									"pixelHeight": 600
+								}
+							}
+						}
+					}
+				]
+			},
+			"request": {
+				"type": "IntentRequest",
+				"requestId": "amzn1.echo-api.request.296d2777-8e51-49a9-b123-d64cede3bd63",
+				"timestamp": "2019-12-27T05:52:29Z",
+				"locale": "en-US",
+				"intent": {
+					"name": "ChooseLevelIntent",
+					"confirmationStatus": "NONE",
+					"slots": {
+						"levelNumber": {
+							"name": "levelNumber",
+							"value": "6",
+							"confirmationStatus": "NONE",
+							"source": "USER"
+						}
+					}
+				}
+			}
+		}
+
+		const result = await testHandler(input)
+		expect(result).toMatchSnapshot()
+	})
 })

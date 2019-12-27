@@ -2,3 +2,4 @@ node_modules/
 dist/
 compressed.zip
 local.env
+media_tmp/

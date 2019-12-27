@@ -42,7 +42,7 @@ const AnswerHandler: RequestHandler = {
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.assess(isCorrect),
-				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound) : speech.levelComplete(counts.correct, counts.total, gameSession.level + 1))
+				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound, gameSession.level) : speech.levelComplete(counts.correct, counts.total, gameSession.level + 1))
 			))
 			.withShouldEndSession(false)
 			.getResponse();
@@ -57,7 +57,7 @@ const AnswerHandler: RequestHandler = {
 			const resolutionsPerAuthority = slot.resolutions.resolutionsPerAuthority
 
 			if (!resolutionsPerAuthority[0].values) {
-				throw new Error(`'${slot.value}' didn't match '${slot.name}' slots`)
+				throw new Error(`AnswerHandler couldn't interpret '${slot.value}' as a '${slot.name}' slot`)
 			}
 
 			/*
@@ -83,18 +83,18 @@ const LaunchRequest: RequestHandler = {
 	},
 	async handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
-		const level = 1
+		const levelNumber = 1
 
-		const gameSession = getNewGame(level)
+		const gameSession = getNewGame(levelNumber)
 		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
 				speech.welcome(),
-				speech.levelIntroduction(level),
-				speech.question(gameSession.currentRound)
+				speech.levelIntroduction(levelNumber),
+				speech.question(gameSession.currentRound, levelNumber)
 			))
-			.reprompt(speech.question(gameSession.currentRound))
+			.reprompt(speech.question(gameSession.currentRound, levelNumber))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
@@ -163,17 +163,17 @@ const NextLevelHandler: Alexa.RequestHandler = {
 	},
 	handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
-		const level = gameSessionManager.getSession().level + 1
+		const levelNumber = gameSessionManager.getSession().level + 1
 
-		const gameSession = getNewGame(level)
+		const gameSession = getNewGame(levelNumber)
 		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
-				speech.levelIntroduction(level),
-				speech.question(gameSession.currentRound)
+				speech.levelIntroduction(levelNumber),
+				speech.question(gameSession.currentRound, levelNumber)
 			))
-			.reprompt(speech.question(gameSession.currentRound))
+			.reprompt(speech.question(gameSession.currentRound, levelNumber))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
@@ -217,7 +217,7 @@ const RepeatQuestionHandler: Alexa.RequestHandler = {
 		}
 
 		return handlerInput.responseBuilder
-			.speak(speech.question(gameSession.currentRound))
+			.speak(speech.question(gameSession.currentRound, gameSession.level))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
@@ -237,28 +237,28 @@ const ChooseLevelHandler: Alexa.RequestHandler = {
 			throw new Error(`Unexpected levelNumber value on ${Alexa.getSlot(handlerInput.requestEnvelope, 'levelNumber')}`)
 		}
 
-		const level = parseInt(levelString)
+		const levelNumber = parseInt(levelString)
 
-		if (Number.isNaN(level)) {
+		if (Number.isNaN(levelNumber)) {
 			throw new Error(`Unable to parse level input '${levelString}'`)
 		}
 
-		if (!levels[level - 1]) {
+		if (!levels[levelNumber - 1]) {
 			return handlerInput.responseBuilder
 				.speak(speech.invalidLevel())
 				.withShouldEndSession(false)
 				.getResponse();
 		}
 
-		const gameSession = getNewGame(level)
+		const gameSession = getNewGame(levelNumber)
 		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
-				speech.levelIntroduction(level),
-				speech.question(gameSession.currentRound)
+				speech.levelIntroduction(levelNumber),
+				speech.question(gameSession.currentRound, levelNumber)
 			))
-			.reprompt(speech.question(gameSession.currentRound))
+			.reprompt(speech.question(gameSession.currentRound, levelNumber))
 			.withShouldEndSession(false)
 			.getResponse();
 	},
