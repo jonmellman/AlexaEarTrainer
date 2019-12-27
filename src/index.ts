@@ -243,11 +243,7 @@ const ChooseLevelHandler: Alexa.RequestHandler = {
 			throw new Error(`Unable to parse level input '${levelString}'`)
 		}
 
-		try {
-			getLevelByNumber(levelNumber)
-		} catch(e) {
-
-
+		if (!getLevelByNumber(levelNumber)) {
 			return handlerInput.responseBuilder
 				.speak(speech.invalidLevel())
 				.withShouldEndSession(false)
