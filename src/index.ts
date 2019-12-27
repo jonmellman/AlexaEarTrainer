@@ -6,6 +6,7 @@ import {
 import {
 	getNewGame,
 	evaluateGuess,
+	levels,
 } from './game'
 import { GameSessionManager } from './GameSessionManager'
 import * as speech from './speech';
@@ -66,7 +67,7 @@ const AnswerHandler: RequestHandler = {
 			const intervalDistanceString = resolutionsPerAuthority[0].values[0].value.id
 			const intervalDistance = parseInt(intervalDistanceString)
 
-			if (isNaN(intervalDistance)) {
+			if (Number.isNaN(intervalDistance)) {
 				throw new Error(`Error converting '${intervalDistanceString}' to a number`)
 			}
 
@@ -77,8 +78,8 @@ const AnswerHandler: RequestHandler = {
 
 const LaunchRequest: RequestHandler = {
 	canHandle(handlerInput) {
-		return Alexa.isNewSession(handlerInput.requestEnvelope) ||
-			Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+		return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest' ||
+			false // NewGameHandler
 	},
 	async handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput)
@@ -222,12 +223,56 @@ const RepeatQuestionHandler: Alexa.RequestHandler = {
 	},
 }
 
+const ChooseLevelHandler: Alexa.RequestHandler = {
+	canHandle(handlerInput) {
+		return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+			Alexa.getIntentName(handlerInput.requestEnvelope) === 'ChooseLevelIntent'
+	},
+	handle(handlerInput) {
+		const gameSessionManager = new GameSessionManager(handlerInput)
+
+		const levelString = Alexa.getSlot(handlerInput.requestEnvelope, 'levelNumber').value
+
+		if (typeof levelString !== 'string') {
+			throw new Error(`Unexpected levelNumber value on ${Alexa.getSlot(handlerInput.requestEnvelope, 'levelNumber')}`)
+		}
+
+		const level = parseInt(levelString)
+
+		if (Number.isNaN(level)) {
+			throw new Error(`Unable to parse level input '${levelString}'`)
+		}
+
+		if (!levels[level - 1]) {
+			return handlerInput.responseBuilder
+				.speak(
+					`Levels must be between 1 and ${levels.length}`
+				)
+				.withShouldEndSession(false)
+				.getResponse();
+		}
+
+		const gameSession = getNewGame(level)
+		gameSessionManager.setSession(gameSession)
+
+		return handlerInput.responseBuilder
+			.speak(speech.compose(
+				speech.levelIntroduction(level),
+				speech.question(gameSession.currentRound)
+			))
+			.reprompt(speech.question(gameSession.currentRound))
+			.withShouldEndSession(false)
+			.getResponse();
+	},
+}
+
 export const handler = Alexa.SkillBuilders.custom()
 	.addRequestHandlers(
 		LaunchRequest,
 		NextLevelHandler,
 		RepeatQuestionHandler,
 		StopHandler,
+		ChooseLevelHandler,
 		AnswerHandler, // This must be the last non-generic input handler, because Alexa maps other phrases to our slot values.
 		// HelpHandler,
 		// ExitHandler,

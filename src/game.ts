@@ -8,7 +8,8 @@ export enum Note {
 	F4 = 65,
 	G4 = 67,
 	A4 = 69,
-	B4 = 71
+	B4 = 71,
+	C5 = 72
 }
 
 export enum Key {

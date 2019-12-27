@@ -39,7 +39,13 @@ const getAudioForInterval = (key: Key, interval: Interval): string => {
 }
 
 const getNoteForKeyAndInterval = (key: Key, interval: Interval): Note => {
-	return (key + interval) + 60 // MIDI offset
+	const note = (key + interval) + 60 // MIDI offset
+
+	if (!Note[note]) {
+		throw new Error(`Unsupported note: ${note}. Key was ${Key[key]} and Interval was ${Interval[interval]}`)
+	}
+
+	return note
 }
 
 
