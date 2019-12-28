@@ -51,6 +51,42 @@ export const goodbye = () =>
 export const invalidLevel = () =>
 	`Choose a level between 1 and ${getNumberOfLevels()}`
 
+
+export const help = () =>
+	`Guess an interval, such as Major Second or Perfect Fifth. I'm sending a card to your Alexa app with more details.`
+
+export const helpCardTitle = () =>
+	'Interval Practice - Guide'
+
+export const helpCardContent = () =>
+// Take care to format using unicode, which is all cards can use.
+`
+⎯⎯⎯⎯⎯⎯⎯⎯
+𝗖𝗼𝗺𝗺𝗮𝗻𝗱𝘀
+❝ Start level 3 ❞ - Start a specific level
+❝ Again? ❞ - Repeat an interval
+❝ Help ❞ - Send this card
+
+⠀
+𝗟𝗲𝘃𝗲𝗹𝘀
+• Level 1: C Major - 1st half
+• Level 2: C Major - 2nd half
+• Level 3: C Major - 1 octave
+• Level 4: C Minor - 1st half
+• Level 5: C Minor - 2nd half
+• Level 6: C Minor - 1 octave
+
+⠀
+𝗖𝗼𝗺𝗶𝗻𝗴 𝘀𝗼𝗼𝗻
+• Levels with multiple octaves
+• Levels with multiple keys
+• Score tracking
+
+⠀
+𝗙𝗲𝗲𝗱𝗯𝗮𝗰𝗸 𝘄𝗲𝗹𝗰𝗼𝗺𝗲 ♡
+jonmellman@gmail.com
+`.trim()
+
 /*
 	Between levels:
 		<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_bridge_02"/>

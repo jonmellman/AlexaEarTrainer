@@ -12,14 +12,14 @@ export interface Level {
 
 const LEVELS: Level[] = [{
 	description: 'First half of the C Major scale',
-	numRounds: 5,
+	numRounds: 10,
 	key: Key.C,
 	targetIntervals: Scales.MAJOR.firstHalf(),
 	isMajor: Scales.MAJOR.isMajor(),
 	octaves: 1
 }, {
 	description: 'Second half of the C Major scale',
-	numRounds: 5,
+	numRounds: 10,
 	key: Key.C,
 	targetIntervals: Scales.MAJOR.secondHalf(),
 	isMajor: Scales.MAJOR.isMajor(),
@@ -40,14 +40,14 @@ const LEVELS: Level[] = [{
     } */,
 {
 	description: 'First half of the C Minor scale',
-	numRounds: 5,
+	numRounds: 10,
 	key: Key.C,
 	targetIntervals: Scales.MINOR.firstHalf(),
 	isMajor: Scales.MINOR.isMajor(),
 	octaves: 1
 }, {
 	description: 'Second half of the C Minor scale',
-	numRounds: 5,
+	numRounds: 10,
 	key: Key.C,
 	targetIntervals: Scales.MINOR.secondHalf(),
 	isMajor: Scales.MINOR.isMajor(),

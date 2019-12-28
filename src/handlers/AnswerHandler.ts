@@ -20,18 +20,17 @@ export const AnswerHandler: RequestHandler = {
 			throw new Error(`AnswerHandler invoked when state is ${previousRoundGameSession.state}`)
 		}
 
-		const intervalDistanceGuess = extractIntervalDistanceFromAnswer(handlerInput)
+		const intervalDistanceGuess = getIntervalDistanceGuess(handlerInput)
 		const gameSession = evaluateGuess(previousRoundGameSession, intervalDistanceGuess)
+		gameSessionManager.setSession(gameSession)
 
 		const stat = gameSession.stats[gameSession.stats.length - 1]
-		const isCorrect = stat.guess === stat.answer
+		const isCorrect = stat.guess === stat.answer // TODO: move to evaluateGuess
 
 		const counts = {
 			correct: gameSession.stats.filter(stat => stat.guess === stat.answer).length,
 			total: gameSession.stats.length
 		}
-
-		gameSessionManager.setSession(gameSession)
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
@@ -41,7 +40,7 @@ export const AnswerHandler: RequestHandler = {
 			.withShouldEndSession(false)
 			.getResponse();
 
-		function extractIntervalDistanceFromAnswer(handlerInput: Alexa.HandlerInput): number {
+		function getIntervalDistanceGuess(handlerInput: Alexa.HandlerInput): number {
 			const slot = Alexa.getSlot(handlerInput.requestEnvelope, 'intervalName') // `intervalName` is the literal name of the slot.
 
 			if (!slot?.resolutions?.resolutionsPerAuthority) {

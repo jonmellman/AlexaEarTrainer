@@ -16,7 +16,12 @@ export const LaunchRequest: RequestHandler = {
 		const gameSession = getNewGame(levelNumber);
 		gameSessionManager.setSession(gameSession);
 		return handlerInput.responseBuilder
-			.speak(speech.compose(speech.welcome(), speech.levelIntroduction(levelNumber), speech.question(gameSession.currentRound, levelNumber)))
+			.withSimpleCard(speech.helpCardTitle(), speech.helpCardContent())
+			.speak(speech.compose(
+				speech.welcome(),
+				speech.levelIntroduction(levelNumber),
+				speech.question(gameSession.currentRound, levelNumber)
+			))
 			.reprompt(speech.question(gameSession.currentRound, levelNumber))
 			.withShouldEndSession(false)
 			.getResponse();
