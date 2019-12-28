@@ -1,0 +1,195 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "interval practice",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AnswerIntent",
+                    "slots": [
+                        {
+                            "name": "intervalName",
+                            "type": "IntervalName"
+                        }
+                    ],
+                    "samples": [
+                        "{intervalName}"
+                    ]
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
+                    "samples": []
+                },
+                {
+                    "name": "ChooseLevelIntent",
+                    "slots": [
+                        {
+                            "name": "levelNumber",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "go to {levelNumber}",
+                        "go to level {levelNumber}",
+                        "start level {levelNumber}"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "IntervalName",
+                    "values": [
+                        {
+                            "id": "0",
+                            "name": {
+                                "value": "root",
+                                "synonyms": [
+                                    "perfect unison",
+                                    "unison"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "1",
+                            "name": {
+                                "value": "minor second"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "name": {
+                                "value": "major second"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "name": {
+                                "value": "minor third"
+                            }
+                        },
+                        {
+                            "id": "4",
+                            "name": {
+                                "value": "major third"
+                            }
+                        },
+                        {
+                            "id": "5",
+                            "name": {
+                                "value": "perfect fourth"
+                            }
+                        },
+                        {
+                            "id": "6",
+                            "name": {
+                                "value": "tritone"
+                            }
+                        },
+                        {
+                            "id": "7",
+                            "name": {
+                                "value": "perfect fifth"
+                            }
+                        },
+                        {
+                            "id": "8",
+                            "name": {
+                                "value": "minor sixth"
+                            }
+                        },
+                        {
+                            "id": "9",
+                            "name": {
+                                "value": "major sixth"
+                            }
+                        },
+                        {
+                            "id": "10",
+                            "name": {
+                                "value": "minor seventh"
+                            }
+                        },
+                        {
+                            "id": "11",
+                            "name": {
+                                "value": "major seventh"
+                            }
+                        },
+                        {
+                            "id": "12",
+                            "name": {
+                                "value": "octave",
+                                "synonyms": [
+                                    "perfect octave"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "AnswerIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "intervalName",
+                            "type": "IntervalName",
+                            "confirmationRequired": false,
+                            "elicitationRequired": false,
+                            "prompts": {},
+                            "validations": [
+                                {
+                                    "type": "hasEntityResolutionMatch",
+                                    "prompt": "Slot.Validation.1056333983164.1068382519298.924490522381"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "delegationStrategy": "ALWAYS"
+        },
+        "prompts": [
+            {
+                "id": "Slot.Validation.1056333983164.1068382519298.924490522381",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Please say an interval like root, major third, minor sixth, etc"
+                    }
+                ]
+            }
+        ]
+    }
+}
