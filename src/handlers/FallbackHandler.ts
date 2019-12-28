@@ -1,7 +1,7 @@
 import * as Alexa from 'ask-sdk-core'
 
 import * as speech from '../speech'
-import { isTestEnvironment } from "../utils";
+import { isTestEnvironment, GameSessionManager } from "../utils";
 
 export const FallbackHandler: Alexa.RequestHandler = {
 	canHandle(handlerInput) {
@@ -11,12 +11,13 @@ export const FallbackHandler: Alexa.RequestHandler = {
 		return true;
 	},
 	handle(handlerInput) {
+		const gameSession = new GameSessionManager(handlerInput).getSession()
+
 		return handlerInput.responseBuilder
-			.speak(speech.compose('Fallback handler', Alexa.getRequestType(handlerInput.requestEnvelope), Alexa.getIntentName(handlerInput.requestEnvelope)))
-			// TODO: implement
-			// .speak(speech.compose(
-			// 	'Whoops, can you rephrase that?'
-			// ))
+			.speak(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.compose(
+				speech.intervalNameHelp(),
+				speech.question(gameSession.currentRound, gameSession.level)
+			) : speech.genericFallback())
 			.getResponse();
 	}
 };

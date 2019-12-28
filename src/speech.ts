@@ -51,9 +51,14 @@ export const goodbye = () =>
 export const invalidLevel = () =>
 	`Choose a level between 1 and ${getNumberOfLevels()}`
 
+export const intervalNameHelp = () =>
+	'Please say an interval like root, major third, minor sixth, etc'
+
+export const genericFallback = () =>
+	`You can say "Start level 1", or ask for help and I'll send you a help card.`
 
 export const help = () =>
-	`Guess an interval, such as Major Second or Perfect Fifth. I'm sending a card to your Alexa app with more details.`
+	`I'm sending a help card to your Alexa app with details.`
 
 export const helpCardTitle = () =>
 	'Interval Practice - Guide'
@@ -69,12 +74,12 @@ export const helpCardContent = () =>
 
 ⠀
 𝗟𝗲𝘃𝗲𝗹𝘀
-• Level 1: C Major - 1st half
-• Level 2: C Major - 2nd half
-• Level 3: C Major - 1 octave
-• Level 4: C Minor - 1st half
-• Level 5: C Minor - 2nd half
-• Level 6: C Minor - 1 octave
+• 1: 1st half of C Major
+• 2: 2nd half of C Major
+• 3: Full octave of C Major
+• 4: 1st half of C Minor
+• 5: 2nd half of C Minor
+• 6: Full octave of C Minor
 
 ⠀
 𝗖𝗼𝗺𝗶𝗻𝗴 𝘀𝗼𝗼𝗻
