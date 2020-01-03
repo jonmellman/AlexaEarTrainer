@@ -1,5 +1,6 @@
 import { Interval, Key } from "./music"
 import { getLevelByNumber } from "./levels"
+import { getRandomElement } from "../utils"
 
 interface Stat {
 	guess: Interval,
@@ -81,10 +82,6 @@ function getNewRound(level: GameState['level'], previousRoundNumber: CurrentRoun
 		return {
 			key: level.key,
 			targetInterval: getRandomElement(level.targetIntervals)
-		}
-
-		function getRandomElement<T>(elements: Array<T>): T {
-			return elements[Math.floor(Math.random() * elements.length)];
 		}
 	}
 }

@@ -17,3 +17,7 @@ export class GameSessionManager {
 }
 
 export const isTestEnvironment = (): boolean => process.env.JEST_WORKER_ID !== undefined;
+
+export function getRandomElement<T>(elements: Array<T>): T {
+	return elements[Math.floor(Math.random() * elements.length)];
+}

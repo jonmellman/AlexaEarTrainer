@@ -47,6 +47,7 @@ A: <question>
 11. right/wrong sounds
 12. add solfege and degree aliases for scale degree
 13. Repeat question when answered wrong
+14. "Training wheels" - play note resolutions
 
 ## Documentation
 

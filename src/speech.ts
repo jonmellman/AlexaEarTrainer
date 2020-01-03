@@ -1,6 +1,8 @@
 import { CurrentRound } from "./game/state"
 import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./game/music"
 import { getNumberOfLevels, getLevelByNumber } from "./game/levels"
+import { getRandomElement } from "./utils"
+
 
 const MEDIA_FOLDER = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
 
@@ -40,7 +42,16 @@ const getAudioForInterval = (key: Key, interval: Interval): string => {
 }
 
 export const assess = (isCorrect: boolean) =>
-	isCorrect ? '<amazon:emotion name="excited" intensity="low">Right!</amazon:emotion>' : 'Wrong.'
+	isCorrect ? `<amazon:emotion name="excited" intensity="low">${getTermForCorrect()}!</amazon:emotion>` : 'Wrong.'
+
+const getTermForCorrect = () => getRandomElement([
+	'Right',
+	'Bingo',
+	'Nice',
+	'Yes',
+	'Correct',
+])
+
 
 export const levelComplete = (correct: number, total: number, nextLevel: number) =>
 	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
