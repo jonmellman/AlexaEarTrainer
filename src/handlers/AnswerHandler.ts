@@ -4,6 +4,7 @@ import { RequestHandler } from 'ask-sdk-core';
 import { evaluateGuess } from '../game/state'
 import { GameSessionManager } from '../utils'
 import * as speech from '../speech';
+import { getStatsSummary, wasPreviousRoundCorrect } from '../game/util';
 
 export const AnswerHandler: RequestHandler = {
 	canHandle(handlerInput) {
@@ -21,21 +22,28 @@ export const AnswerHandler: RequestHandler = {
 		}
 
 		const intervalDistanceGuess = getIntervalDistanceGuess(handlerInput)
+		const correctInterval = previousRoundGameSession.currentRound.targetInterval
 		const gameSession = evaluateGuess(previousRoundGameSession, intervalDistanceGuess)
 		gameSessionManager.setSession(gameSession)
 
-		const stat = gameSession.stats[gameSession.stats.length - 1]
-		const isCorrect = stat.guess === stat.answer // TODO: move to evaluateGuess
+		const isCorrect = wasPreviousRoundCorrect(gameSession.stats)
 
-		const counts = {
-			correct: gameSession.stats.filter(stat => stat.guess === stat.answer).length,
-			total: gameSession.stats.length
+		if (gameSession.state === 'LEVEL_COMPLETE') {
+			const statsSummary = getStatsSummary(gameSession.stats)
+
+			return handlerInput.responseBuilder
+				.speak(speech.compose(
+					isCorrect ? speech.correctGuess() : speech.wrongGuess(correctInterval),
+					gameSession.passed ? speech.levelPassed(statsSummary, gameSession.level + 1) : speech.levelFailed(statsSummary)
+				))
+				.withShouldEndSession(false)
+				.getResponse();
 		}
 
 		return handlerInput.responseBuilder
 			.speak(speech.compose(
-				speech.assess(isCorrect),
-				(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.question(gameSession.currentRound, gameSession.level) : speech.levelComplete(counts.correct, counts.total, gameSession.level + 1))
+				isCorrect ? speech.correctGuess() : speech.wrongGuess(correctInterval),
+				speech.question(gameSession.currentRound, gameSession.level)
 			))
 			.withShouldEndSession(false)
 			.getResponse();

@@ -13,9 +13,16 @@ export const NextLevelHandler: Alexa.RequestHandler = {
 	},
 	handle(handlerInput) {
 		const gameSessionManager = new GameSessionManager(handlerInput);
-		const levelNumber = gameSessionManager.getSession().level + 1;
+		const previousGameSession = gameSessionManager.getSession()
+
+		if (previousGameSession.state !== 'LEVEL_COMPLETE') {
+			throw new Error(`NextLevelHandler called when game state is ${gameSessionManager.getSession().state}`)
+		}
+
+		const levelNumber = gameSessionManager.getSession().level + (previousGameSession.passed ? 1 : 0) // Increment level if they were presented with the next level
 		const gameSession = getNewGame(levelNumber);
 		gameSessionManager.setSession(gameSession);
+
 		return handlerInput.responseBuilder
 			.speak(speech.compose(speech.levelIntroduction(levelNumber), speech.question(gameSession.currentRound, levelNumber)))
 			.reprompt(speech.question(gameSession.currentRound, levelNumber))

@@ -17,7 +17,8 @@ interface LevelInProgressState {
 interface LevelCompleteState {
 	state: 'LEVEL_COMPLETE',
 	level: number,
-	stats: Stat[]
+	stats: Stat[],
+	passed: boolean
 }
 
 export type GameState = LevelInProgressState | LevelCompleteState
@@ -44,13 +45,16 @@ export const evaluateGuess = (gameSession: LevelInProgressState, guessInterval: 
 	return isLevelComplete ? levelComplete(gameSession, guessInterval) : levelProgress(gameSession, guessInterval)
 
 	function levelComplete(gameSession: LevelInProgressState, guessInterval: Interval): LevelCompleteState {
+		const stats = [...gameSession.stats, {
+			guess: guessInterval,
+			answer: gameSession.currentRound.targetInterval
+		}]
+
 		return {
 			...gameSession,
 			state: 'LEVEL_COMPLETE',
-			stats: [...gameSession.stats, {
-				guess: guessInterval,
-				answer: gameSession.currentRound.targetInterval
-			}],
+			stats: stats,
+			passed: didPassLevel(stats)
 		}
 	}
 
@@ -63,6 +67,13 @@ export const evaluateGuess = (gameSession: LevelInProgressState, guessInterval: 
 			}],
 			currentRound: getNewRound(gameSession.level, gameSession.currentRound.roundNumber)
 		}
+	}
+
+	function didPassLevel(stats: Stat[]): boolean {
+		const correct = stats.filter(stat => stat.guess === stat.answer).length
+		const total = stats.length
+
+		return correct / total >= 0.8 // TODO: Extract to constant
 	}
 }
 

@@ -41,8 +41,10 @@ const getAudioForInterval = (key: Key, interval: Interval): string => {
 	return getMediaAudio(Note[note])
 }
 
-export const assess = (isCorrect: boolean) =>
-	isCorrect ? `<amazon:emotion name="excited" intensity="low">${getTermForCorrect()}!</amazon:emotion>` : 'Wrong.'
+export const correctGuess = () => `<amazon:emotion name="excited" intensity="low">${getTermForCorrect()}!</amazon:emotion>`
+
+export const wrongGuess = (answer: Interval) => `Wrong, that was a ${intervalNames[answer]}.`
+
 
 const getTermForCorrect = () => getRandomElement([
 	'Right',
@@ -52,9 +54,28 @@ const getTermForCorrect = () => getRandomElement([
 	'Correct',
 ])
 
+const intervalNames: Record<Interval, string> = {
+	[Interval.ROOT]: 'Root',
+	[Interval.MINOR_SECOND]: 'Minor Second',
+	[Interval.MAJOR_SECOND]: 'Major Second',
+	[Interval.MINOR_THIRD]: 'Minor Third',
+	[Interval.MAJOR_THIRD]: 'Major Third',
+	[Interval.PERFECT_FOURTH]: 'Perfect Fourth',
+	[Interval.TRITONE]: 'Tritone',
+	[Interval.PERFECT_FIFTH]: 'Perfect Fifth',
+	[Interval.MINOR_SIXTH]: 'Minor Sixth',
+	[Interval.MAJOR_SIXTH]: 'Major Sixth',
+	[Interval.MINOR_SEVENTH]: 'Minor Seventh',
+	[Interval.MAJOR_SEVENTH]: 'Major Sixth',
+	[Interval.OCTAVE]: 'Octave'
+}
 
-export const levelComplete = (correct: number, total: number, nextLevel: number) =>
-	`All done! Score was ${correct} out of ${total}. Ready for level ${nextLevel}?`
+
+export const levelPassed = ({ correct, total }: { correct: number, total: number }, nextLevel: number) =>
+	`All done! Score was ${correct} out of ${total}. Ready to move on to level ${nextLevel}?`
+
+export const levelFailed = ({ correct, total }: { correct: number, total: number }) =>
+	`All done! Score was ${correct} out of ${total}. Want to try this level again?`
 
 export const goodbye = () =>
 	'Thanks for playing!'
