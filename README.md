@@ -43,12 +43,13 @@ A: <question>
 7. ~~AMAZON.FallbackIntent~~
 8. ~~AMAZON.StopIntent~~
 9.  ~~AMAZON.NavigateHomeIntent~~
-10. Persistence
+10. Persistence of last level and historical scores.
 11. right/wrong sounds
-12. add aliases for scale degree (two, three etc)
+12. add solfege and degree aliases for scale degree
 13. Repeat question when answered wrong
 
 ## Documentation
 
 Beta testers / long description:
 - For extra functionality, have the Alexa app on your phone.
+- Latency may be slow depending on where you're located. It's currently hosted in Oregon, US. Let me know how latency is for you.

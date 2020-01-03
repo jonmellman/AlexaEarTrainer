@@ -14,6 +14,7 @@ export const FallbackHandler: Alexa.RequestHandler = {
 		const gameSession = new GameSessionManager(handlerInput).getSession()
 
 		return handlerInput.responseBuilder
+			// TODO: Move level in progress fallback to AnswerHandler.ts > LevelInProgressFallback
 			.speak(gameSession.state === 'LEVEL_IN_PROGRESS' ? speech.compose(
 				speech.intervalNameHelp(),
 				speech.question(gameSession.currentRound, gameSession.level)
