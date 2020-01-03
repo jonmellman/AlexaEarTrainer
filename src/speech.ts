@@ -41,17 +41,31 @@ const getAudioForInterval = (key: Key, interval: Interval): string => {
 	return getMediaAudio(Note[note])
 }
 
-export const correctGuess = () => `<amazon:emotion name="excited" intensity="low">${getTermForCorrect()}!</amazon:emotion>`
+export const correctGuess = () => `<amazon:emotion name="excited" intensity="low">${getTermForCorrectGuess()}!</amazon:emotion>`
 
 export const wrongGuess = (answer: Interval) => `Wrong, that was a ${intervalNames[answer]}.`
 
 
-const getTermForCorrect = () => getRandomElement([
+const getTermForCorrectGuess = () => getRandomElement([
 	'Right',
 	'Bingo',
 	'Nice',
 	'Yes',
 	'Correct',
+])
+
+const getTermForWellDone = () => getRandomElement([
+	'<say-as interpret-as="interjection">boom</say-as>',
+	'<say-as interpret-as="interjection">you go girl</say-as>',
+	'<say-as interpret-as="interjection">yippee</say-as>',
+	'<say-as interpret-as="interjection">yes</say-as>',
+	'<say-as interpret-as="interjection">yabba dabba doo</say-as>',
+	'<say-as interpret-as="interjection">woo hoo</say-as>',
+	'<say-as interpret-as="interjection">well done</say-as>',
+	'<say-as interpret-as="interjection">way to go</say-as>',
+	'<say-as interpret-as="interjection">stunning</say-as>',
+	'<say-as interpret-as="interjection">she shoots she scores</say-as>',
+	'<say-as interpret-as="interjection">mazel tov </say-as>`])'
 ])
 
 const intervalNames: Record<Interval, string> = {
@@ -70,12 +84,18 @@ const intervalNames: Record<Interval, string> = {
 	[Interval.OCTAVE]: 'Octave'
 }
 
+const LEVEL_OVER = '<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_neutral_response_01"/>'
 
-export const levelPassed = ({ correct, total }: { correct: number, total: number }, nextLevel: number) =>
-	`All done! Score was ${correct} out of ${total}. Ready to move on to level ${nextLevel}?`
+export const levelPassed = ({ correct, total }: { correct: number, total: number }, nextLevel: number) => compose(
+	LEVEL_OVER,
+	correct === total ? compose(getTermForWellDone(), 'You got them all right!') : `Pretty good. Score was ${correct} out of ${total}.`,
+	`Ready to move on to level ${nextLevel}?`
+)
 
-export const levelFailed = ({ correct, total }: { correct: number, total: number }) =>
-	`All done! Score was ${correct} out of ${total}. Want to try this level again?`
+export const levelFailed = ({ correct, total }: { correct: number, total: number }) => compose(
+	LEVEL_OVER,
+	`Score was ${correct} out of ${total}. Want to try this level again?`
+)
 
 export const goodbye = () =>
 	'Thanks for playing!'
