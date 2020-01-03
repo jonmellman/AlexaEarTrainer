@@ -71,6 +71,7 @@
                             "name": {
                                 "value": "root",
                                 "synonyms": [
+                                    "dough",
                                     "perfect unison",
                                     "unison"
                                 ]
@@ -79,67 +80,101 @@
                         {
                             "id": "1",
                             "name": {
-                                "value": "minor second"
+                                "value": "minor second",
+                                "synonyms": [
+                                    "Rah"
+                                ]
                             }
                         },
                         {
                             "id": "2",
                             "name": {
-                                "value": "major second"
+                                "value": "major second",
+                                "synonyms": [
+                                    "Ray"
+                                ]
                             }
                         },
                         {
                             "id": "3",
                             "name": {
-                                "value": "minor third"
+                                "value": "minor third",
+                                "synonyms": [
+                                    "Meh"
+                                ]
                             }
                         },
                         {
                             "id": "4",
                             "name": {
-                                "value": "major third"
+                                "value": "major third",
+                                "synonyms": [
+                                    "Me"
+                                ]
                             }
                         },
                         {
                             "id": "5",
                             "name": {
-                                "value": "perfect fourth"
+                                "value": "perfect fourth",
+                                "synonyms": [
+                                    "Fah"
+                                ]
                             }
                         },
                         {
                             "id": "6",
                             "name": {
-                                "value": "tritone"
+                                "value": "tritone",
+                                "synonyms": [
+                                    "Seh",
+                                    "Fee"
+                                ]
                             }
                         },
                         {
                             "id": "7",
                             "name": {
-                                "value": "perfect fifth"
+                                "value": "perfect fifth",
+                                "synonyms": [
+                                    "Sole"
+                                ]
                             }
                         },
                         {
                             "id": "8",
                             "name": {
-                                "value": "minor sixth"
+                                "value": "minor sixth",
+                                "synonyms": [
+                                    "Le"
+                                ]
                             }
                         },
                         {
                             "id": "9",
                             "name": {
-                                "value": "major sixth"
+                                "value": "major sixth",
+                                "synonyms": [
+                                    "La"
+                                ]
                             }
                         },
                         {
                             "id": "10",
                             "name": {
-                                "value": "minor seventh"
+                                "value": "minor seventh",
+                                "synonyms": [
+                                    "Teh"
+                                ]
                             }
                         },
                         {
                             "id": "11",
                             "name": {
-                                "value": "major seventh"
+                                "value": "major seventh",
+                                "synonyms": [
+                                    "Tea"
+                                ]
                             }
                         },
                         {
