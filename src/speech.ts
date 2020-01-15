@@ -128,12 +128,9 @@ export const helpCardContent = () =>
 
 ⠀
 𝗟𝗲𝘃𝗲𝗹𝘀
-• 1: 1st half of C Major
-• 2: 2nd half of C Major
-• 3: Full octave of C Major
-• 4: 1st half of C Minor
-• 5: 2nd half of C Minor
-• 6: Full octave of C Minor
+• 1–3: C Major
+• 4–6: C Minor
+• 7–9: C Chromatic
 
 ⠀
 𝗖𝗼𝗺𝗶𝗻𝗴 𝘀𝗼𝗼𝗻
