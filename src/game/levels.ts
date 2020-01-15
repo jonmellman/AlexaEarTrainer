@@ -59,6 +59,27 @@ const LEVELS: Level[] = [{
 	targetIntervals: Scales.MINOR.full(),
 	isMajor: Scales.MINOR.isMajor(),
 	octaves: 1
+}, {
+	description: 'First half of the C Chromatic scale',
+	numRounds: 10,
+	key: Key.C,
+	targetIntervals: Scales.CHROMATIC.firstHalf(),
+	isMajor: Scales.CHROMATIC.isMajor(),
+	octaves: 1
+}, {
+	description: 'Second half of the C Chromatic scale',
+	numRounds: 10,
+	key: Key.C,
+	targetIntervals: Scales.CHROMATIC.secondHalf(),
+	isMajor: Scales.CHROMATIC.isMajor(),
+	octaves: 1
+}, {
+	description: 'Full octave of the C Chromatic scale',
+	numRounds: 10,
+	key: Key.C,
+	targetIntervals: Scales.CHROMATIC.full(),
+	isMajor: Scales.CHROMATIC.isMajor(),
+	octaves: 1
 }]
 
 export const getLevelByNumber = (levelNumber: number): Level => LEVELS[levelNumber - 1]

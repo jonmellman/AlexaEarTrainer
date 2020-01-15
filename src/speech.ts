@@ -3,11 +3,11 @@ import { getNoteFromKeyAtInterval, Key, Interval, Note } from "./game/music"
 import { getNumberOfLevels, getLevelByNumber } from "./game/levels"
 import { getRandomElement } from "./utils"
 
-
 const MEDIA_FOLDER = 'https://alexa-ear-trainer.s3-us-west-2.amazonaws.com/media'
 
-const getMediaAudio = (filename: string): string =>
-	`<audio src="${MEDIA_FOLDER}/${filename}.mp3"/>`
+const getMediaAudio = (filename: string): string => {
+	return `<audio src="${MEDIA_FOLDER}/${encodeURIComponent(filename)}.mp3"/>`
+}
 
 export const compose = (...speeches: String[]): string =>
 	// Join with sentence break
@@ -16,8 +16,10 @@ export const compose = (...speeches: String[]): string =>
 export const welcome = () =>
 	`<amazon:emotion name="excited" intensity="high">Welcome!</amazon:emotion> ${getMediaAudio('welcome')}`
 
-export const levelIntroduction = (level: number) =>
-	`level ${level}.`
+export const levelIntroduction = (levelNumber: number) => {
+	const { description, numRounds } = getLevelByNumber(levelNumber)
+	return `level ${levelNumber}: ${description}. There are ${numRounds} questions. Good luck!`
+}
 
 export const question = (currentRound: CurrentRound, levelNumber: number) =>
 	compose(
@@ -89,7 +91,7 @@ const LEVEL_OVER = '<audio src="soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx
 export const levelPassed = ({ correct, total }: { correct: number, total: number }, nextLevel: number) => compose(
 	LEVEL_OVER,
 	correct === total ? compose(getTermForWellDone(), 'You got them all right!') : `Pretty good. Score was ${correct} out of ${total}.`,
-	`Ready to move on to level ${nextLevel}?`
+	nextLevel <= getNumberOfLevels() ? `Ready to move on to level ${nextLevel}?` : `You passed all of the levels! Awesome job!`
 )
 
 export const levelFailed = ({ correct, total }: { correct: number, total: number }) => compose(

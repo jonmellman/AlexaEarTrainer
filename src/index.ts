@@ -11,6 +11,17 @@ import { LaunchRequest } from './handlers/LaunchRequest';
 import { AnswerHandler } from './handlers/AnswerHandler';
 import { HelpHandler } from './handlers/HelpHandler'
 
+const loggingInterceptor = (handlerInput: Alexa.HandlerInput) => {
+	const loggingContext = {
+		userId: handlerInput.requestEnvelope.context.System.user.userId,
+		deviceId: handlerInput.requestEnvelope.context.System.device?.deviceId,
+		request: handlerInput.requestEnvelope.request,
+		session: handlerInput.requestEnvelope.session,
+		timestamp: new Date().toISOString()
+	}
+	console.log(JSON.stringify(loggingContext))
+}
+
 export const handler = Alexa.SkillBuilders.custom()
 	.addRequestHandlers(
 		LaunchRequest,
@@ -24,6 +35,7 @@ export const handler = Alexa.SkillBuilders.custom()
 		SessionEndedRequestHandler,
 		FallbackHandler,
 	)
+	.addRequestInterceptors(loggingInterceptor)
 	.addErrorHandlers(ErrorHandler)
 	.lambda()
 

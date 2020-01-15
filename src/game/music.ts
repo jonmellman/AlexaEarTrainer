@@ -76,6 +76,21 @@ export const Scales = {
 		Interval.MINOR_SIXTH,
 		Interval.MINOR_SEVENTH,
 		Interval.OCTAVE
+	]),
+	CHROMATIC: new Scale([
+		Interval.ROOT,
+		Interval.MINOR_SECOND,
+		Interval.MAJOR_SECOND,
+		Interval.MINOR_THIRD,
+		Interval.MAJOR_THIRD,
+		Interval.PERFECT_FOURTH,
+		Interval.TRITONE,
+		Interval.PERFECT_FIFTH,
+		Interval.MINOR_SIXTH,
+		Interval.MAJOR_SIXTH,
+		Interval.MINOR_SEVENTH,
+		Interval.MAJOR_SEVENTH,
+		Interval.OCTAVE,
 	])
 }
 
