@@ -1,20 +1,6 @@
+# AlexaEarTrainer
 
-
-U: Alexa, ask Interval Trainer to start a new game
-A: Starting a new game at level 1 <UserLastLevel or level 1>. Name the interval:
-A: <question>
-
-U: Major Second
-A: <audio correct>
-A: <question> || if (score)
-
-U: Major Seventh
-A: <audio incorrect>. Your score so far is <session score>
-A: <question>
-
-U: Skip
-A: <question>
-
+AlexaEarTrainer is the source code for the [Interval Practice Alexa skill](https://www.amazon.com/Jonathan-Mellman-Interval-Practice/dp/B0849LJK1D/ref=sr_1_1?keywords=interval+practice&qid=1582005160&s=digital-skills&sr=1-1).
 
 
 ## Creating media
@@ -32,9 +18,9 @@ A: <question>
 
 1. Add more levels
    1. ~~Minor~~
-   2. Octave
-   3. Major with chromatics
-   4. Minor with chromatics
+   2. ~~Octave~~
+   3. ~~Major with chromatics~~
+   4. ~~Minor with chromatics~~
 2. Logic for when to level up
 3. ~~"Start at level _"~~
 4. ~~"Explain level _"~~
@@ -44,9 +30,9 @@ A: <question>
 8. ~~AMAZON.StopIntent~~
 9.  ~~AMAZON.NavigateHomeIntent~~
 10. Persistence of last level and historical scores.
-11. right/wrong sounds
-12. add solfege and degree aliases for scale degree
-13. Repeat question when answered wrong
+11. ~~right/wrong sounds~~
+12. ~~add solfege and degree aliases for scale degree~~
+13. ~~Repeat question when answered wrong~~
 14. "Training wheels" - play note resolutions
 
 ## Documentation
